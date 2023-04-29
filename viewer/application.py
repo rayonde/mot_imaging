@@ -6,13 +6,15 @@ from tkinter import ttk
 import sys
 sys.path.append("..")
 from config import config 
-from frame import SingleshotTab, RealtimeTab, AverageshotTab, TofTab, AtomnumberTab, ThreeroiTab, ExperimentalTab, SettingsTab
 # import cofing file from parent directory for use 
 # from ..config import config
 
+from widgets import *
+from plot import Figure
+
 class Tab(ttk.Notebook):
     """Packed tabbed frame to choose between different modes of the application."""
-    def __init__(self, master, data, **kwargs):
+    def __init__(self, master, data=None, **kwargs):
         self.master = master
         self.data = data
         super().__init__(self.master)
@@ -46,9 +48,10 @@ class Tab(ttk.Notebook):
 
 class MainWindow(ttk.Frame):
     """Main window of the application."""
-    def __init__(self, master=None, **kwargs):
+    def __init__(self, master, data=None,  **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
+        self.data = data
         
         try:
             self.master.title(config.name)
@@ -77,8 +80,42 @@ class MainWindow(ttk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=2)
         self.grid_columnconfigure(1, weight=1)
+        #######################################################################
+        # Mode selection frame
+        self.tab = Tab(self, self.data)
+        self.tab.grid(row=0, column=0, sticky="nsew")
 
+        #######################################################################
+        # Plot frame contains the orginal image and the processed image
+        pad = 5
+        plot_frame = ttk.Frame(self)
+        plot_frame.grid(row=0, column=1, rowspan=2, padx=pad, pady=pad, sticky="nsew")
+        
+        # Create a frame for the raw image
+        raw_frame = ttk.Labelframe(plot_frame, text="raw image")
+        raw_frame.grid(row=0, column=0, padx=pad, pady=pad, sticky="nsew")
+        
 
+        # Create a frame for the processed image
+        processed_frame = ttk.Labelframe(plot_frame, text="processed image")
+        processed_frame.grid(row=1, column=0, padx=pad, pady=pad, sticky="nsew")
+        self.plot = Figure(processed_frame)
+        
+        
+        #######################################################################
+        # Create a frame for infos and logs
+        info_frame = ttk.Frame(self)
+        info_frame.grid(row=1, column=0,padx=pad, pady=pad, sticky="nsew")
+
+        # In info frame create a shot info frame
+        shot_info_frame = ttk.Labelframe(info_frame, text="Shot info")
+        shot_info_frame.pack(fill=tk.BOTH, expand=True)
+        self.shot_info_table = ShotInfoTable(shot_info_frame, self.data)
+
+        ## Logs
+        log_frame = ttk.Labelframe(info_frame, text="Logs", relief=tk.SUNKEN)
+        log_frame.pack(fill=tk.BOTH, expand=True)
+        self.log = LogTextBox(log_frame, self.data)
 
 
 # test
