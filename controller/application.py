@@ -4,9 +4,9 @@ import queue
 from models.shots import Shot
 
 # import sub controllers
-from logs import LogController
-from shots import ShotController
-from sequences import SequenceController
+from .logs import LogController
+from .shots import ShotController
+from .sequences import SequenceController
 
 class MainController:
     def __init__(self, worker, shutdown_cleanup, log_queue):

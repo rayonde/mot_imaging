@@ -6,7 +6,7 @@ import numpy as np
 
 from config import config
 
-from helper import FloatEntry
+from .helper import FloatEntry
 from itertools import chain
 
 

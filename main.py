@@ -41,7 +41,7 @@ class App():
                                          log_queue=self.log_handler.log_queue)
         
         # Initialize GUI
-        self.gui = MainWindow(self.controller)
+        self.gui = MainWindow(controller=self.controller)
 
         # Set up the GUI
         self.controller.set_view(self.gui)

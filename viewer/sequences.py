@@ -8,7 +8,7 @@ import numpy as np
 
 from config import config
 
-from helper import FloatEntry
+from .helper import FloatEntry
 
 
 class ToFFit(ttk.Frame):

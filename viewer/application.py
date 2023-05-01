@@ -3,11 +3,11 @@ import tkinter.font as font
 from tkinter import ttk
 
 from config import config 
-from logs import LogTextBox
-from settings import Settings
-from plots import MplFigure, ImageTab, SweepFigureTab
-from shots import ShotList, ShotFit, ExperimentParams, ThreeROI
-from sequences import ToFFit, AtomNumberOptimization
+from .logs import LogTextBox
+from .settings import Settings
+from .plots import MplFigure, ImageTab, SweepFigureTab
+from .shots import ShotList, ShotFit, ExperimentParams, ThreeROI
+from .sequences import ToFFit, AtomNumberOptimization
 
 pad = 5 
 
@@ -19,10 +19,10 @@ class Tab(ttk.Notebook):
         super().__init__(self.master)
 
         # Create tabs
-        self.shot_fit = ShotFit(self, self.presenter)
-        self.tof_fit = ToFFit(self, self.presenter)
-        self.atom_number_fit = AtomNumberOptimization(self, self.presenter)
-        self.three_roi_atom_count = ThreeROI(self, self.presenter)
+        self.shot_fit = ShotFit(self, self.controller)
+        self.tof_fit = ToFFit(self, self.controller)
+        self.atom_number_fit = AtomNumberOptimization(self, self.controller)
+        self.three_roi_atom_count = ThreeROI(self, self.controller)
         exp = ExperimentParams(self)
         self.settings = Settings(self)
 
@@ -35,10 +35,11 @@ class Tab(ttk.Notebook):
 
 class MainWindow(ttk.Frame):
     """Main window of the application."""
-    def __init__(self, master, controller=None,  **kwargs):
-        super().__init__(master, **kwargs)
-        self.master = master
+    def __init__(self,  controller=None,  **kwargs):
+        
+        self.master = tk.Tk()
         self.controller = controller
+        super().__init__(self.master, **kwargs)
         
         try:
             self.master.title(config.name)
@@ -92,3 +93,4 @@ class MainWindow(ttk.Frame):
         log_frame = ttk.Labelframe(info_frame, text="Logs", relief=tk.SUNKEN)
         log_frame.pack(fill=tk.BOTH, expand=True)
         self.log = LogTextBox(log_frame)
+
