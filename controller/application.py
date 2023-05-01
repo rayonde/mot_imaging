@@ -22,18 +22,18 @@ class MainController:
 
     def set_view(self, view):
         self.view = view
-        self.log_controller= LogController(self.view.logs, log_queue=self.log_queue)
+        self.log_controller= LogController(self.view.log, log_queue=self.log_queue)
         self.shot_controller = ShotController(
             self,
             self.worker,
             plot_view=self.view.plot,
-            fit_view=self.view.tabs.shot_fit,
-            list_view=self.view.shot_list,
-            threeroi_view=self.view.tabs.three_roi_atom_count,
-            settings_view=self.view.tabs.settings
+            fit_view=self.view.tab.shot_fit,
+            list_view=self.view.shot_info_table,
+            threeroi_view=self.view.tab.three_roi_atom_count,
+            settings_view=self.view.tab.settings
         )
         self.sequence_controller = SequenceController(
-            self, self.worker, plot_view=self.view.plot, fit_view=self.view.tabs.tof_fit
+            self, self.worker, plot_view=self.view.plot, fit_view=self.view.tab.tof_fit
         )
 
         # Handle window closure or SIGINT from console

@@ -5,7 +5,7 @@ from tkinter import ttk
 from config import config 
 from .logs import LogTextBox
 from .settings import Settings
-from .plots import MplFigure, ImageTab, SweepFigureTab
+from .plots import MplFigure
 from .shots import ShotList, ShotFit, ExperimentParams, ThreeROI
 from .sequences import ToFFit, AtomNumberOptimization
 
@@ -39,7 +39,6 @@ class MainWindow(ttk.Frame):
         
         self.master = tk.Tk()
         self.controller = controller
-        super().__init__(self.master, **kwargs)
         
         try:
             self.master.title(config.name)
@@ -48,10 +47,10 @@ class MainWindow(ttk.Frame):
         self.master.geometry("1200x1000")
         self.master.resizable(True, True)
         
+        super().__init__(self.master, **kwargs)
+
         # Create a menu bar
         self.menu_bar = tk.Menu(self.master)
-
-    
         self.path_menu = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_bar.add_cascade(label="Image Path", menu=self.path_menu)
         # click on the menu item to open a dialog box to select the path
@@ -63,7 +62,13 @@ class MainWindow(ttk.Frame):
         self.save_menu.add_command(label="Settings", command=self.save_menu.invoke)
         
         self.master.config(menu=self.menu_bar)
-    
+        
+        default_font = font.nametofont("TkTextFont")
+        default_font.configure(size=14)
+        
+        # Initialize our application window
+        self.pack(fill="both", expand=True)
+
         # Row 0 and column 1 expand when window is resized
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=2)
