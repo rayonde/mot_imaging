@@ -6,13 +6,13 @@ import numpy as np
 
 from config import config
 
-from .components import FloatEntry
+from helper import FloatEntry
 from itertools import chain
 
 
 class ShotList(ttk.Frame):
-    def __init__(self, master, presenter, **kw):
-        self.presenter = presenter
+    def __init__(self, master, controller, **kw):
+        self.controller = controller
         self.master = master
 
         super().__init__(master)
@@ -73,11 +73,11 @@ class ShotList(ttk.Frame):
 
     def _on_double_click(self, event):
         idx = self.tree.index(self.tree.identify("item", event.x, event.y))
-        self.presenter.shot_presenter.display_recent_shot(idx)
+        self.controller.shot_controller.display_recent_shot(idx)
 
     def _on_return_keypress(self, event):
         idx = self.tree.index(self.tree.focus())
-        self.presenter.shot_presenter.display_recent_shot(idx)
+        self.controller.shot_controller.display_recent_shot(idx)
 
     def _on_treeview_select(self, event):
         num_selected = len(self.tree.selection())
@@ -88,13 +88,13 @@ class ShotList(ttk.Frame):
             self.master.configure(text="Shots")
 
         indexes = [self.tree.index(s) for s in self.tree.selection()]
-        self.presenter.shot_presenter.update_shotlist_selection(indexes)
+        self.controller.shot_controller.update_shotlist_selection(indexes)
 
 
 class ShotFit(ttk.Frame):
-    def __init__(self, master, presenter):
+    def __init__(self, master, controller):
         self.master = master
-        self.presenter = presenter
+        self.controller = controller
 
         self.fit_params = {}
         self.config_params = {}
@@ -120,7 +120,7 @@ class ShotFit(ttk.Frame):
         roi_control = RegionOfInterestControl(options_frame)
         roi_control.pack(fill="x", expand=True)
 
-        center_control = CenterControl(options_frame, self.presenter)
+        center_control = CenterControl(options_frame, self.controller)
         center_control.pack(fill="x", expand=True)
 
         fit_frame = FitControl(options_frame)
@@ -154,7 +154,7 @@ class ShotFit(ttk.Frame):
             entry.configure(state="readonly")
 
     def _rerun_fit(self):
-        self.presenter.shot_presenter.refit_current_shot()
+        self.controller.shot_controller.refit_current_shot()
 
 
 class RegionOfInterestControl(ttk.LabelFrame):
@@ -213,9 +213,9 @@ class RegionOfInterestControl(ttk.LabelFrame):
 
 class ThreeROI(ttk.Frame):
     """Creates object for three ROIs processing"""
-    def __init__(self, master, presenter):
+    def __init__(self, master, controller):
         self.master = master
-        self.presenter = presenter
+        self.controller = controller
 
         super().__init__(self.master)
 
@@ -245,7 +245,7 @@ class ThreeROI(ttk.Frame):
             self.countentries[keys[l_indx]] = entry
 
     def _rerun_fit(self):
-        self.presenter.shot_presenter.refit_current_shot()
+        self.controller.shot_controller.refit_current_shot()
 
     def display(self, threeroi_counts):
         for k, v in threeroi_counts.items():
@@ -342,9 +342,9 @@ class ThreeRegionOfInterestControl(ttk.LabelFrame):
 
 class CenterControl(ttk.LabelFrame):
     """Toggle object for fixing center of gaussian fit."""
-    def __init__(self, master, presenter):
+    def __init__(self, master, controller):
         self.master = master
-        self.presenter = presenter
+        self.controller = controller
 
         super().__init__(self.master, text="Center")
 
@@ -403,7 +403,7 @@ class CenterControl(ttk.LabelFrame):
             self._update_center()
 
     def _fill_current_shot_center(self):
-        shot = self.presenter.shot_presenter.current_shot
+        shot = self.controller.shot_controller.current_shot
         if shot:
             if shot.fit:
                 self.center_x.var.set(shot.fit.best_values["x0"])

@@ -8,19 +8,19 @@ import numpy as np
 
 from config import config
 
-from .components import FloatEntry
+from helper import FloatEntry
 
 
 class ToFFit(ttk.Frame):
-    def __init__(self, master, presenter):
+    def __init__(self, master, controller):
         self.master = master
-        self.presenter = presenter
+        self.controller = controller
 
         super().__init__(self.master)
 
         # Left Frame (ToF Controls)
         sequence_params = SequenceParams(
-            self, self.presenter, run="start_tof", fit_selected="start_tof_selection"
+            self, self.controller, run="start_tof", fit_selected="start_tof_selection"
         )
         sequence_params.pack(side="left", expand=True, anchor="e", pady=15, padx=15)
 
@@ -99,16 +99,16 @@ class ToFFit(ttk.Frame):
 
 
 class AtomNumberOptimization(ttk.Frame):
-    def __init__(self, master, presenter):
+    def __init__(self, master, controller):
         self.master = master
-        self.presenter = presenter
+        self.controller = controller
 
         super().__init__(self.master)
 
         # Left Frame (ToF Controls)
         sequence_params = SequenceParams(
             self,
-            self.presenter,
+            self.controller,
             run="start_atom_opt",
             fit_selected="start_atom_opt_selection",
         )
@@ -116,9 +116,9 @@ class AtomNumberOptimization(ttk.Frame):
 
 
 class SequenceParams(ttk.Frame):
-    def __init__(self, master, presenter, *, run, fit_selected):
+    def __init__(self, master, controller, *, run, fit_selected):
         self.master = master
-        self.presenter = presenter
+        self.controller = controller
         self.run = run
         self.fit_selected = fit_selected
 
@@ -169,11 +169,11 @@ class SequenceParams(ttk.Frame):
 
     def _run(self):
         vals = self._check_sequence()
-        getattr(self.presenter.sequence_presenter, self.run)(vals)
+        getattr(self.controller.sequence_controller, self.run)(vals)
 
     def _fit_selected(self):
         vals = self._check_sequence()
-        getattr(self.presenter.sequence_presenter, self.fit_selected)(vals)
+        getattr(self.controller.sequence_controller, self.fit_selected)(vals)
 
     def _autofill(self):
         """Autofills scrolled text box based on input start,end,step variables"""

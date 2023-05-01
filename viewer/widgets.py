@@ -10,12 +10,71 @@ import tkinter.scrolledtext as tkst
 class SingleshotTab(tk.Frame):
     """Tab for single shot mode."""
 
-    def __init__(self, master, data, **kwargs):
+    def __init__(self, master, presenter):
         self.master = master
-        self.data = data
-        super().__init__(self.master)
-        self.pack(expand=True, fill=tk.BOTH)
+        self.presenter = presenter
 
+        self.fit_params = {}
+        self.config_params = {}
+
+        super().__init__(self.master)
+
+        # Fit Parameters (uneditable)
+        params_frame = ttk.Frame(self)
+        params_frame.pack(side="left", expand=True, pady=15)
+        keys = ["N", "A", "x0", "y0", "sx", "sy", "theta", "z0"]
+        labels = ["N", "A", "x_0", "y_0", "σ_x", "σ_y", "θ", "z_0"]
+        for l_idx, lbl in enumerate(labels):
+            ttk.Label(params_frame, text=lbl).grid(row=l_idx, column=0)
+
+        for f_idx in range(8):
+            entry = ttk.Entry(params_frame, state="readonly")
+            entry.grid(row=f_idx, column=1)
+            self.fit_params[keys[f_idx]] = entry
+
+        options_frame = ttk.Frame(self)
+        options_frame.pack(side="left", expand=True, pady=15)
+
+        roi_control = RegionOfInterestControl(options_frame)
+        roi_control.pack(fill="x", expand=True)
+
+        center_control = CenterControl(options_frame, self.presenter)
+        center_control.pack(fill="x", expand=True)
+
+        fit_frame = FitControl(options_frame)
+        fit_frame.pack(fill="x", expand=True)
+
+        rerun_fit_btn = ttk.Button(
+            options_frame, text="Rerun Fit", command=self._rerun_fit
+        )
+        rerun_fit_btn.pack(fill="x", expand=True, padx=10, pady=5)
+
+    @property
+    def keys(self):
+        return ["N", "A", "x0", "y0", "sx", "sy", "theta", "z0"]
+
+    def display(self, fit_params):
+        for k, v in fit_params.items():
+            if k in ["x0", "y0", "sx", "sy"]:
+                v *= config.pixel_size
+            elif k == "theta":
+                v = np.degrees(v)
+            entry = self.fit_params[k]
+            entry.configure(state="normal")
+            entry.delete(0, "end")
+            entry.insert(0, "{:.4g}".format(v))
+            entry.configure(state="readonly")
+
+    def clear(self):
+        for entry in self.fit_params.values():
+            entry.configure(state="normal")
+            entry.delete(0, "end")
+            entry.configure(state="readonly")
+
+    def _rerun_fit(self):
+        self.presenter.shot_presenter.refit_current_shot()
+
+        
 class RealtimeTab(tk.Frame):
     """Tab for real time mode."""
 
