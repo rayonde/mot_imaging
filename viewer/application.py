@@ -2,31 +2,14 @@ import tkinter as tk
 import tkinter.font as font
 from tkinter import ttk
 
-# import config file from parent directory for test
-import sys
-sys.path.append("..")
 from config import config 
-# import c ofing file from parent directory for use 
-# from ..config import config
-
 from logs import LogTextBox
-from sequences im
+from settings import Settings
+from plots import MplFigure, ImageTab, SweepFigureTab
+from shots import ShotList, ShotFit, ExperimentParams, ThreeROI
+from sequences import ToFFit, AtomNumberOptimization
 
 pad = 5 
-
-class FigureTab(ttk.Notebook):
-    """tabbed frame for image output"""
-    def __init__(self, master, controller=None, **kwargs):
-        self.master = master
-        self.controller = controller
-        super().__init__(self.master)
-
-        # Create tabs
-        self.image_frame = ImageTab(self, self.controller)
-        self.sweep_frame = SweepFigureTab(self, self.controller)
-        self.add(self.image_frame, text="Image", padding=10)
-        self.add(self.sweep_frame, text="Sweep Figure", padding=10)
-        
 
 class Tab(ttk.Notebook):
     """Packed tabbed frame to choose between different modes of the application."""
@@ -36,31 +19,19 @@ class Tab(ttk.Notebook):
         super().__init__(self.master)
 
         # Create tabs
-        self.singleshot_tab = SingleshotTab(self, self.controller)
-        self.add(self.singleshot_tab, text="Single shot", padding=10)
-        
-        self.realtime_tab = RealtimeTab(self, self.controller)
-        self.add(self.realtime_tab, text="Real time", padding=10)
+        self.shot_fit = ShotFit(self, self.presenter)
+        self.tof_fit = ToFFit(self, self.presenter)
+        self.atom_number_fit = AtomNumberOptimization(self, self.presenter)
+        self.three_roi_atom_count = ThreeROI(self, self.presenter)
+        exp = ExperimentParams(self)
+        self.settings = Settings(self)
 
-        self.averageshot_tab = AverageshotTab(self, self.controller)
-        self.add(self.averageshot_tab, text="Average shot", padding=10)
-
-        self.tof_tab = TofTab(self, self.controller)
-        self.add(self.tof_tab, text="TOF", padding=10)
-
-        self.atomnumber_tab = AtomnumberTab(self, self.controller)
-        self.add(self.atomnumber_tab, text="Atom number", padding=10)
-
-        self.threeroi_tab = ThreeroiTab(self, self.controller)   
-        self.add(self.threeroi_tab, text="Three ROI", padding=10)
-
-        self.experimental_tab = ExperimentalTab(self, self.controller)
-        self.add(self.experimental_tab, text="Experimental params", padding=10)
-
-        self.settings_tab = SettingsTab(self, self.controller)
-        self.add(self.settings_tab, text="Settings", padding=10)
-        
-        self.pack(expand=True, fill=tk.BOTH)
+        self.add(self.shot_fit, text="Gaussian", padding=10)
+        self.add(self.tof_fit, text="Temperature", padding=10)
+        self.add(self.atom_number_fit, text="Atom # Optimization", padding=10)
+        self.add(self.three_roi_atom_count, text="Three ROIs", padding=10)
+        self.add(exp, text="Experiment Settings", padding=10)
+        self.add(self.settings, text="Settings", padding=10)
 
 class MainWindow(ttk.Frame):
     """Main window of the application."""
@@ -93,9 +64,9 @@ class MainWindow(ttk.Frame):
         self.master.config(menu=self.menu_bar)
     
         # Row 0 and column 1 expand when window is resized
-        # self.grid_rowconfigure(0, weight=1)
-        # self.grid_rowconfigure(1, weight=2)
-        # self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=2)
+        self.grid_columnconfigure(1, weight=1)
         #######################################################################
         # Mode selection frame
         self.tab = Tab(self, self.controller)
@@ -103,8 +74,9 @@ class MainWindow(ttk.Frame):
 
         #######################################################################
         # Create a frame for figures
-        self.figure_tab = FigureTab(self, self.controller)
-        self.figure_tab.grid(row=0, column=1, sticky="nsew")
+        plot_frame = ttk.LabelFrame(self)
+        plot_frame.grid(row=0, column=1, rowspan=2, padx=pad, pady=pad, sticky="NSEW")
+        self.plot = MplFigure(plot_frame)
 
         #######################################################################
         # Create a frame for infos and logs
@@ -114,7 +86,7 @@ class MainWindow(ttk.Frame):
         # In info frame create a shot info frame
         shot_info_frame = ttk.Labelframe(info_frame, text="Shot info")
         shot_info_frame.pack(fill=tk.BOTH, expand=True)
-        self.shot_info_table = ShotInfoTable(shot_info_frame, self.controller)
+        self.shot_info_table = ShotList(shot_info_frame, self.controller, height=8)
 
         ## Logs
         log_frame = ttk.Labelframe(info_frame, text="Logs", relief=tk.SUNKEN)
