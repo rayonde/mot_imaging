@@ -6,7 +6,7 @@ from tkinter import ttk
 import sys
 sys.path.append("..")
 from config import config 
-# import cofing file from parent directory for use 
+# import c ofing file from parent directory for use 
 # from ..config import config
 
 from widgets import *
