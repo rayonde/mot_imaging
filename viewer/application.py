@@ -10,7 +10,23 @@ from config import config
 # from ..config import config
 
 from widgets import *
-from plot import Figure
+from plot import ImageTab, SweepFigureTab
+
+pad = 5 
+
+class FigureTab(ttk.Notebook):
+    """tabbed frame for image output"""
+    def __init__(self, master, data=None, **kwargs):
+        self.master = master
+        self.data = data
+        super().__init__(self.master)
+
+        # Create tabs
+        self.image_frame = ImageTab(self, self.data)
+        self.sweep_frame = SweepFigureTab(self, self.data)
+        self.add(self.image_frame, text="Image", padding=10)
+        self.add(self.sweep_frame, text="Sweep Figure", padding=10)
+        
 
 class Tab(ttk.Notebook):
     """Packed tabbed frame to choose between different modes of the application."""
@@ -77,31 +93,19 @@ class MainWindow(ttk.Frame):
         self.master.config(menu=self.menu_bar)
     
         # Row 0 and column 1 expand when window is resized
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=2)
-        self.grid_columnconfigure(1, weight=1)
+        # self.grid_rowconfigure(0, weight=1)
+        # self.grid_rowconfigure(1, weight=2)
+        # self.grid_columnconfigure(1, weight=1)
         #######################################################################
         # Mode selection frame
         self.tab = Tab(self, self.data)
         self.tab.grid(row=0, column=0, sticky="nsew")
 
         #######################################################################
-        # Plot frame contains the orginal image and the processed image
-        pad = 5
-        plot_frame = ttk.Frame(self)
-        plot_frame.grid(row=0, column=1, rowspan=2, padx=pad, pady=pad, sticky="nsew")
-        
-        # Create a frame for the raw image
-        raw_frame = ttk.Labelframe(plot_frame, text="raw image")
-        raw_frame.grid(row=0, column=0, padx=pad, pady=pad, sticky="nsew")
-        
+        # Create a frame for figures
+        self.figure_tab = FigureTab(self, self.data)
+        self.figure_tab.grid(row=0, column=1, sticky="nsew")
 
-        # Create a frame for the processed image
-        processed_frame = ttk.Labelframe(plot_frame, text="processed image")
-        processed_frame.grid(row=1, column=0, padx=pad, pady=pad, sticky="nsew")
-        self.plot = Figure(processed_frame)
-        
-        
         #######################################################################
         # Create a frame for infos and logs
         info_frame = ttk.Frame(self)
@@ -115,7 +119,7 @@ class MainWindow(ttk.Frame):
         ## Logs
         log_frame = ttk.Labelframe(info_frame, text="Logs", relief=tk.SUNKEN)
         log_frame.pack(fill=tk.BOTH, expand=True)
-        self.log = LogTextBox(log_frame, self.data)
+        self.log = LogTextBox(log_frame)
 
 
 # test

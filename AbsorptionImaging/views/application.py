@@ -4,7 +4,9 @@ import tkinter as tk
 import tkinter.font as font
 import tkinter.ttk as ttk
 
-from config import config
+import sys
+sys.path.append("..")
+from config import config 
 from views.logs import LogTextBox
 from views.settings import MplFigure, Settings
 from views.shots import ShotList, ShotFit, ExperimentParams, ThreeROI
@@ -103,3 +105,9 @@ class Tabs(ttk.Notebook):
         self.add(self.three_roi_atom_count, text="Three ROIs", padding=10)
         self.add(exp, text="Experiment Settings", padding=10)
         self.add(self.settings, text="Settings", padding=10)
+
+# test
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MainWindow(root)
+    app.mainloop()

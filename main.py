@@ -2,6 +2,7 @@ import logging
 import sys
 import os 
 import queue
+from concurrent.futures import ThreadPoolExecutor
 
 class QueueHandler(logging.Handler):
     """Log handler that outputs to a queue."""
@@ -25,3 +26,8 @@ class App():
             datefmt="%Y-%m-%d %H:%M:%S",
             handlers=[self.log_handler],
         )
+        # Initialize component instances
+        self.worker = ThreadPoolExecutor(max_workers=1)
+
+        # Initialize GUI
+        self.gui = MainWindow(self.app)
