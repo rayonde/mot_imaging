@@ -38,10 +38,10 @@ class Configuration(configparser.ConfigParser):
             for option in self.options(section):
                 self.set(section, option, getattr(self, option))
     
-    def save_config(self):
+    def save(self):
         """Save the current configuration to the config.ini file."""
         with open(self.config_file, "w") as configfile:
-            self.write(configfile)
+            self.write(configfile, space_around_delimiters=False)
     
     def reset_config(self):
         """Reset the configuration to the default values."""

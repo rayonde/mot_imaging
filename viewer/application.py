@@ -44,7 +44,7 @@ class MainWindow(ttk.Frame):
             self.master.title(config.name)
         except:
             self.master.title("Absorption Imaging")
-        self.master.geometry("1200x1000")
+        #self.master.geometry("1200x1000")
         self.master.resizable(True, True)
         
         super().__init__(self.master, **kwargs)
