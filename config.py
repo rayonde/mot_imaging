@@ -6,6 +6,8 @@
 
 import configparser
 import os
+import numpy as np
+from pathlib import Path
 
 class Configuration(configparser.ConfigParser):
     """Class to store the configuration variables."""
@@ -63,7 +65,29 @@ class Configuration(configparser.ConfigParser):
     def pixel_size(self):
         """Camera pixel size in mm."""
         return self.getfloat("camera", "pixel_size") * 1e-3
+    
+    @property
+    def exposure_time(self):
+        """Camera pixel size in us."""
+        return self.getfloat("camera", "exposure_time") 
+    
+    @property
+    def trigger_delay(self):
+        """Camera pixel size in us."""
+        return self.getfloat("camera", "exposure_time") 
+    
+    
+    ##### Atom Settings #####
+    @property
+    def repump_time(self):
+        """Repump time in ms."""
+        return self.getfloat("atoms", "repump_time")
 
+    @property
+    def atom_mass(self):
+        """Atom mass in kg."""
+        return self.getfloat("atoms", "mass")
+    
     ##### Beam Settings #####
     @property
     def magnification(self):
@@ -95,17 +119,6 @@ class Configuration(configparser.ConfigParser):
     def colormap(self):
         """Numpy colormap name."""
         return self.get("plot", "colormap")
-
-    ##### Atom Settings #####
-    @property
-    def repump_time(self):
-        """Repump time in ms."""
-        return self.getfloat("atoms", "repump_time")
-
-    @property
-    def atom_mass(self):
-        """Atom mass in kg."""
-        return self.getfloat("atoms", "mass")
 
     ##### Fit Settings #####
     @property

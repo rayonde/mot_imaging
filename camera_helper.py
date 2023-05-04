@@ -1,31 +1,30 @@
-
 from platform import node
 import PySpin
 import os
 import sys
 import time 
+import logging
 
 class Interface():
     def __init__(self):
         self.system = PySpin.System.GetInstance()
         self.version =self.system.GetLibraryVersion()
-        print('Library version: %d.%d.%d.%d' % (self.version.major, self.version.minor, self.version.type, self.version.build))
+        logging.info('Library version: %d.%d.%d.%d' % (self.version.major, self.version.minor, self.version.type, self.version.build))
     
         # Interface list 
         self.iface_list = self.system.GetInterfaces()
         self.num_interfaces = self.iface_list.GetSize()
-        print('Number of interfaces detected: %i' % self.num_interfaces)
+        logging.info('Number of interfaces detected: %i' % self.num_interfaces)
     
         # Camera list 
         self.cam_list = self.system.GetCameras()
         self.num_cams = self.cam_list.GetSize()
-        print('Number of cameras detected: %i' % self.num_cams)
-
+        logging.info('Number of cameras detected: %i' % self.num_cams)
 
     def __enter__(self):
         # Finish if there are no cameras
         if self.num_cams == 0 or self.num_interfaces == 0:
-            print('No camera is detected!')
+            logging.info('No camera is detected!')
             raise Exception("No camera is connected")
         else: 
             return self
