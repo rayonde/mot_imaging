@@ -84,7 +84,7 @@ def get_parameter(nodemap, nodename):
   
 def set_parameter(nodemap, nodename, entryname) -> bool:
     try: 
-        node = PySpin.CEnumerationPtr(nodemap.GetNode(nodename))
+        node = PySpin.CEnumerationPtr(nodemap.pri(nodename))
         if not PySpin.IsAvailable(node) or not PySpin.IsWritable(node):
             print('Unable to set %s (enum retrieval). Aborting...' % nodename)
             return False

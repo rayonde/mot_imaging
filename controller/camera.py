@@ -33,7 +33,15 @@ class CameraController:
         # Get nodemap
         self.nodemap = self.cam.GetNodeMap()
         self.nodemap_tldevice = self.cam.GetTLDeviceNodeMap()
+    
+    def acquisition(self, num_images=10, filename='test', for):
+        """Acquire image."""
 
+        MAX_IMAGES = 5000
+        num_images = 0
+
+        self.cam.BeginAcquisition()
+        logging.info('Camera acquisition starts.')
     
     def close(self):
         self.cam.DeInit()
@@ -56,20 +64,91 @@ class CameraController:
         else:
             logging.info('Device control information not available.')
     
+    def config_trigger(self, exposure_time='min', trigger='Line3'):
+        """Configure trigger."""
+        
+        self.set_config('GainAuto', 'Off')
+
+        self.set_config('TriggerMode', 'On')
+        self.set_config('TriggerSource', trigger)
+        self.set_config('TriggerSelector', 'ExposureStart')
+        self.set_config('TriggerActivation', 'RisingEdge')
+
+        self.set_config('ExposureMode', 'Timed')
+        self.set_config('ExposureAuto', 'Off')
+        self.set_config('ExposureTime', exposure_time)
+    
+    def config_fomat(self, pixel_format='Mono8'):
+        """Configure image format."""
+
+        self.set_config('PixelFormat', pixel_format)
+      
     def set_config(self, nodename, value):
         """Set config node."""
-        try: 
-            node = ps.CIntegerPtr(self.nodemap.GetNode(nodename))
-            node_feature = ps.CValuePtr(node)
-            if ps.IsWritable(node_feature):
-                node_feature.SetValue(value)
-                logging.info('%s set to %s' % (node_feature.GetName(), node_feature.ToString()))
+        node_address = self.nodemap.GetNode(nodename)
+        
+        if ps.IsAvailable(node_address) and ps.IsWritable(node_address):
+            
+            if ps.CEnumEntryPtr(node_address).IsValid():
+                node = ps.CEnumerationPtr(node_address)
+                node_entry = ps.CEnumEntryPtr(node.GetEntryByName(value))
+                entry_value = node_entry.GetValue()
+                
+                node.SetIntValue(entry_value)
+                logging.info('%s set to %s' % (node.GetName(), value))
+            
+            elif ps.CIntegerPtr(node_address).IsValid():
+                node = ps.CIntegerPtr(node_address)
+
+                if isinstance(value, str):
+                    if value == 'min':
+                        value = node.GetMin()
+                    elif value == 'max':
+                        value = node.GetMax()
+                    else:
+                        logging.info('Value %s is not valid.' % value)
+                else:
+                    value = int(value)
+
+                if node.GetMin() <= value <= node.GetMax():
+                    node.SetValue(value)
+                    logging.info(f'{node.GetName()} set to {value}')
+                else:
+                    logging.info('Value %s is out of range.' % value)
+
+            
+            elif ps.CFloatPtr(node_address).IsValid():
+                node = ps.CFloatPtr(node_address)
+
+                if isinstance(value, str):
+                    if value == 'min':
+                        value = node.GetMin()
+                    elif value == 'max':
+                        value = node.GetMax()
+                    else:
+                        logging.info('Value %s is not valid.' % value)
+                else:
+                    value = int(value)
+
+                if node.GetMin() <= value <= node.GetMax():
+                    node.SetValue(value)
+                    logging.info(f'{node.GetName()} set to {value}')
+                else:
+                    logging.info('Value %s is out of range.' % value)
+
+
+            elif ps.CBooleanPtr(node_address).IsValid():
+                node = ps.CBooleanPtr(node_address)
+                
+                value = bool(value)
+                node.SetValue(value)
+                logging.info('%s set to %s' % (node.GetName(), value))
+
             else:
-                logging.info('Unable to set %s to %s' % (node_feature.GetName(), node_feature.ToString()))
-        except:
-            logging.info('Unable to set %s to %s' % (nodename, value))
-
-
+                logging.info('Type of node is not supported temporarily.')
+        else:
+            logging.info('Node %s is not available' % nodename)
+        
     def get_config(self, nodename):
         """Get config node."""
         node_address = self.nodemap.GetNode(nodename)
@@ -110,16 +189,25 @@ class CameraController:
                 else:
                     logging.info('Unable to get %s' % node.GetName())
             
+            # Boolean node
             elif ps.CBooleanPtr(node_address).IsValid():
-                pass 
+                node = ps.CBooleanPtr(node_address)
+                node_feature = node.GetValue()
+
+                if ps.IsReadable(node_feature):
+                    logging.info('%s: %s' % (node.GetName(), node_feature))
+                    return node_feature
+                else:
+                    logging.info('Unable to get %s' % node.GetName())
+
             elif ps.CCommandPtr(node_address).IsValid():
-                pass
+                logging.info('Command node is not supported temporarily.')
             elif ps.CStringPtr(node_address).IsValid():
-                pass
+                logging.info('String node is not supported temporarily.')
             elif ps.CRegisterPtr(node_address).IsValid():
-                pass
+                logging.info('Register node is not supported temporarily.')
             elif ps.CCategoryPtr(node_address).IsValid():
-                logging.info('Category node %s' % nodename) 
+                logging.info('Category node is not supported temporarily.') 
         else: 
             logging.info('Unable to get %s' % nodename)
 
@@ -143,4 +231,3 @@ if __name__ == '__main__':
 
     cam_controller.close()
 
-    
