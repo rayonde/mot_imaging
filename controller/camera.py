@@ -10,7 +10,19 @@ class CameraController:
         # self.main_controller = main_controller
         # self.worker = worker
         # self.camera_view = camera_view
-
+        self.system = None
+        self.cam_list = None
+        self.version = None
+        self.iface_list = None
+        self.num_interfaces = None
+        self.cam_list = None
+        self.num_cams = 0
+        self.cam = None
+        self.nodemap = None
+        self.nodemap_tldevice = None
+        self.find_camera()
+        
+    def find_camera(self):
         self.system = ps.System.GetInstance()
         self.cam_list = self.system.GetCameras()
         self.version = self.system.GetLibraryVersion()
@@ -28,20 +40,76 @@ class CameraController:
   
         # Get camera
         self.cam = self.cam_list.GetByIndex(0)
-        print (self.cam)
-        self.cam.Init()
-        # Get nodemap
-        self.nodemap = self.cam.GetNodeMap()
-        self.nodemap_tldevice = self.cam.GetTLDeviceNodeMap()
-    
-    def acquisition(self, num_images=10, filename='test', for):
+        if self.cam is not None:
+            self.cam.Init()
+            # Get nodemap
+            self.nodemap = self.cam.GetNodeMap()
+            self.nodemap_tldevice = self.cam.GetTLDeviceNodeMap()
+            logging.info('Camera is initiated.')
+        else:
+            logging.info('Camera not found.')
+
+    def reset_camera(self):
+        """Reset camera to default settings."""
+        if self.cam is not None:
+            self.close()
+            
+        logging.info('Resetting camera to default settings...')
+        self.find_camera()
+        self.cam.UserSetSelector.SetValue(ps.UserSetSelector_Default)
+        self.cam.UserSetLoad()
+
+
+    def acquisition(self, num_images=10, wait_time=0, pxelformat="Mono8", fileformat='bmp', filename='test', folder='data', tag='beam'):
         """Acquire image."""
 
         MAX_IMAGES = 5000
-        num_images = 0
-
+        
+        # Create ImageProcessor instance for post processing images
+        processor = ps.ImageProcessor()
+        # By default, if no specific color processing algorithm is set, the image
+        # processor will default to NEAREST_NEIGHBOR method.
+        processor.SetColorProcessing(ps.SPINNAKER_COLOR_PROCESSING_ALGORITHM_HQ_LINEAR)
+        
         self.cam.BeginAcquisition()
         logging.info('Camera acquisition starts.')
+
+        for i in range(num_images):
+            try: 
+                image_result = self.cam.GetNextImage(1000)
+                if image_result.IsIncomplete():
+                    logging.info('Image incomplete with image status %d ...' % image_result.GetImageStatus())
+                else:
+
+                    width = image_result.GetWidth()
+                    height = image_result.GetHeight()
+                    logging.info('Grabbed Image %d, width = %d, height = %d' % (i, width, height))
+
+                    # Get image data
+                    image_converted = image_result.Convert(ps.PixelFormat_Mono8, ps.HQ_LINEAR)
+                    # image_data = image_converted.GetData()
+
+                    # Save image
+                    if not os.path.exists(folder):
+                        os.makedirs(folder)
+
+                    timestr = time.strftime("%Y%m%d_%H%M%S")
+                    image_filename = os.path.join(folder, timestr + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
+                    
+                    
+                    image_converted.Save(image_filename)
+                    logging.info('Image saved at %s' % image_filename)
+                    # Release image
+                    image_result.Release()
+                    logging.info('Image %d released.' % i)
+                    # Wait
+                    time.sleep(wait_time)
+
+            except ps.SpinnakerException as ex:
+                logging.info('Error: %s' % ex)
+
+        self.cam.EndAcquisition()
+        logging.info('Camera acquisition ends.')
     
     def close(self):
         self.cam.DeInit()
@@ -211,23 +279,4 @@ class CameraController:
         else: 
             logging.info('Unable to get %s' % nodename)
 
-
-if __name__ == '__main__':
-    cam_controller = CameraController()
-    n = cam_controller.nodemap.GetNode('AcquisitionMode')
-    node = ps.CEnumerationPtr(n)
-    print("------------------------------------")
-    print("====================================")
-    print(n)
-    print(node)
-    node_feature = node.GetCurrentEntry()
-    print(ps.IsReadable(node_feature))
-    print(node_feature)
-
-    #print(node_feature_symbol)
-    #print(node_feature.ToString())
-    # print(node.GetEntries())
- 
-
-    cam_controller.close()
 

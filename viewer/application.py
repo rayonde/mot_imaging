@@ -8,7 +8,7 @@ from .settings import Settings
 from .plots import MplFigure
 from .shots import ShotList, ShotFit, ExperimentParams, ThreeROI
 from .sequences import ToFFit, AtomNumberOptimization
-
+from .camera import CameraTab
 pad = 5 
 
 class Tab(ttk.Notebook):
@@ -19,13 +19,15 @@ class Tab(ttk.Notebook):
         super().__init__(self.master)
 
         # Create tabs
+        self.camera = CameraTab(self, self.controller)
         self.shot_fit = ShotFit(self, self.controller)
         self.tof_fit = ToFFit(self, self.controller)
         self.atom_number_fit = AtomNumberOptimization(self, self.controller)
         self.three_roi_atom_count = ThreeROI(self, self.controller)
         exp = ExperimentParams(self)
         self.settings = Settings(self)
-
+        
+        self.add(self.camera, text="Camera", padding=10)
         self.add(self.shot_fit, text="Gaussian", padding=10)
         self.add(self.tof_fit, text="Temperature", padding=10)
         self.add(self.atom_number_fit, text="Atom # Optimization", padding=10)
