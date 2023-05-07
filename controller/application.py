@@ -20,10 +20,11 @@ class MainController:
         self.log_controller = None
         self.shot_controller = None
         self.sequence_controller = None
+        self.camera_controller = None
+        self.camera_controller = CameraController()
 
     def set_view(self, view):
         self.view = view
-        #self.camera_controller = CameraController(self.view.camera, self.worker)
 
         self.log_controller= LogController(self.view.log, log_queue=self.log_queue)
         self.shot_controller = ShotController(

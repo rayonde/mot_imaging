@@ -27,18 +27,16 @@ class App():
         # Initialize logger
         self.log_handler = QueueHandler()
         logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-            handlers=[self.log_handler],
+            level=logging.INFO, format="%(asctime)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S", handlers=[self.log_handler]
         )
+        
         # Initialize thread manager
         self.worker = ThreadPoolExecutor(max_workers=1)
         
         # Initialize main controller
-        self.controller = MainController(self.worker, 
-                                         shutdown_cleanup=self.cleanup, 
-                                         log_queue=self.log_handler.log_queue)
+        self.controller = MainController(
+            self.worker, shutdown_cleanup=self.cleanup, log_queue=self.log_handler.log_queue
+        )
         
         # Initialize GUI
         self.gui = MainWindow(controller=self.controller)
@@ -59,7 +57,6 @@ class App():
     def cleanup(self):
         """Pre-GUI shutdown cleanup tasks."""
         self.worker.shutdown(wait=False)
-
         self.file_watcher.stop()
         self.file_watcher.join(3)
 

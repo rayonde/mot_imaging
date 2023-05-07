@@ -236,3 +236,5 @@ class Configuration(configparser.ConfigParser):
         return os.path.dirname(self.config_file)
     
 config = Configuration(config_file="config.ini")
+for key in config["camera"].keys():
+    print(key, config["camera"][key])

@@ -20,6 +20,8 @@ class CameraController:
         self.cam = None
         self.nodemap = None
         self.nodemap_tldevice = None
+        self.isavailable = False
+
         self.find_camera()
         
     def find_camera(self):
@@ -39,15 +41,19 @@ class CameraController:
         logging.info('Number of cameras detected: %i' % self.num_cams)
   
         # Get camera
-        self.cam = self.cam_list.GetByIndex(0)
-        if self.cam is not None:
-            self.cam.Init()
-            # Get nodemap
-            self.nodemap = self.cam.GetNodeMap()
-            self.nodemap_tldevice = self.cam.GetTLDeviceNodeMap()
-            logging.info('Camera is initiated.')
+        if self.cam_list:
+            self.cam = self.cam_list.GetByIndex(0)
+            if self.cam is not None:
+                self.cam.Init()
+                # Get nodemap
+                self.nodemap = self.cam.GetNodeMap()
+                self.nodemap_tldevice = self.cam.GetTLDeviceNodeMap()
+                logging.info('Camera is initiated.')
+                self.isavailable = True
+            else:
+                logging.info('Camera not found.')
         else:
-            logging.info('Camera not found.')
+            logging.info('Camera is not connected')
 
     def reset_camera(self):
         """Reset camera to default settings."""
@@ -58,6 +64,7 @@ class CameraController:
         self.find_camera()
         self.cam.UserSetSelector.SetValue(ps.UserSetSelector_Default)
         self.cam.UserSetLoad()
+
 
 
     def acquisition(self, num_images=10, wait_time=0, pxelformat="Mono8", fileformat='bmp', filename='test', folder='data', tag='beam'):
