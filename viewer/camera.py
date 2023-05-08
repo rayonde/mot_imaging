@@ -8,15 +8,18 @@ class CameraTab(ttk.Frame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.master = master
-    
         self.camera_controller = controller.camera_controller
-        self.camera_config = {}
         
+        self.camera_config = {}
+        self.unit_config = {}
+        self.exp_config = {"image_num": 10, 
+                                "tag": "background"}
+
         ##################################
         # Left column
         ##################################
         # Update config
-        self._update_config()
+        self._get_config()
 
         # Information frame
         self._update_info_view()
@@ -28,7 +31,6 @@ class CameraTab(ttk.Frame):
         self.save = ttk.Button(self, text="Save Config", command=self._save_config())
         self.save.grid(row=2, column=0)
 
-       
         ##################################
         # Right column
         ##################################
@@ -36,45 +38,44 @@ class CameraTab(ttk.Frame):
         self.right_frame = ttk.Frame(self)
         #self.right_frame.grid(row=0, column=1, sticky="nsew")
         self.right_frame.pack(side="right", fill="both", expand=True)
-        
-        self.setting_frame = ttk.LabelFrame(self.right_frame, text="Test Settings")
-        self.setting_frame.pack(side=tk.TOP, fill="both", padx=5, pady=5)
-
-        self.update_button = tk.Button(self.right_frame, text="Reset Camera")
-        self.update_button.pack(side=tk.TOP, fill="both", padx=5, pady=5)
-
-        self.reset_button = tk.Button(self.right_frame, text="Update Config")
-        self.reset_button.pack(side=tk.TOP, fill="both", padx=5, pady=5)
-
-        self.start_button = tk.Button(self.right_frame, text="Start Acquisition", background="green")
-        self.start_button.pack(side=tk.TOP, fill="both", padx=5, pady=5)
-        
-        self.stop_button = tk.Button(self.right_frame, text="Stop Acquisition")
-        self.stop_button.pack(side=tk.TOP, fill="both", padx=5, pady=5)
-
-        self.continuous_button = tk.Button(self.right_frame, text="Continuous trigger", background="yellow")
-        self.continuous_button.pack(side=tk.TOP, fill="both", padx=5, pady=5)
     
-    def _update_config(self):
+    def _set_camera_config(self):
+        """According to the camera_config distionary, set the parameters to the camera controller"""
+
+        for name, entry in self.camera_config.items():
+            self.camera_controller.set_config(name, entry.get())
+
+    def _update_exp_config(self, name, value):
+        """Update the experiment config"""
+        self.exp_config[name] = value
+
+
+    def _get_config(self):
+        
+        # Get config parameters from config.py
+        section = "camera"
+        section_unit = "unit"
+        self.camera_config.update(config[section])
+        self.unit_config.update(config[section_unit])
+        
         # Get the camera parameters from controller
         if self.camera_controller.isavailable:
             self.camera_config["AcquisitionMode"] = self.camera_controller.get_config("AcquisitionMode")
             self.camera_config["PixelFormat"] = self.camera_controller.get_config("PixelFormat")
-        # Get config parameters from config.py
-        section = "camera"
-        for key in config[section].keys():
-            text = key.replace("_", " ").capitalize()
-
-     
+        
+ 
     def _update_info_view(self):
         # Update the view of the camera parameters
         self.info_frame = ttk.LabelFrame(self, text="Camera Information")
         self.info_frame.pack(side="left", fill="both", padx=5, pady=5, expand=True)
 
-        for i, key in enumerate(self.camera_config.keys()):
-            ttk.Label(self.info_frame, text=key).grid(row=i, column=0, padx=5, pady=5)
-            ttk.Label(self.info_frame, text=self.camera_config[key]).grid(row=i, column=1, padx=5, pady=5)
-    
+        for name, entry in self.camera_config.items():
+            text = name.replace("_", " ").capitalize()
+            ttk.Label(self.info_frame, text=text).grid(row=0, column=0, padx=5, pady=5)
+            ttk.Label(self.info_frame, text=entry).grid(row=0, column=1, padx=5, pady=5)
+            if name in self.unit_config.keys():
+                ttk.Label(self.info_frame, text=self.unit_config[name]).grid(row=0, column=2, padx=5, pady=5)           
+
     def _save_config(self):
         # Save the config to config.py
         for name, entry in self.camera_config.items():
@@ -82,22 +83,32 @@ class CameraTab(ttk.Frame):
             config[section][key] = str(entry.get())
         config.save()
 
-    def _update_camera_settings(self):
+    def _update_settings_view(self):
         # Update the view of the camera parameters
         self.camera_frame = ttk.LabelFrame(self, text="Camera Settings")
         self.camera_frame.grid(row=1, column=0, padx=5, pady=5)
-        
-        imagenumber_var = tk.StringVar(value=100)
+    
+        # Image number
+        image_num_default = tk.StringVar(value=self.camera_settings["image_num"])
         tk.Label(self.camera_frame, text="Image N:").grid(row=0, column=0, padx=5, pady=5)
-        tk.Entry(self.camera_frame, textvariable=imagenumber_var).grid(row=0, column=1, padx=5, pady=5)
-
+        image_num_entry = tk.Entry(self.camera_frame, textvariable=image_num_default)
+        image_num_entry.grid(row=0, column=1, padx=5, pady=5)
+        image_num_entry.bind("<Return>", self._update_exp_config("image_num", image_num_default.get()))
+        
+        # Tag to represent the image type: background, beam, mot
         tag_var = tk.StringVar(value="background")
         tk.Label(self.camera_frame, text="Tag:").grid(row=1, column=0, padx=5, pady=5)
-        tk.Entry(self.camera_frame, textvariable=tag_var).grid(row=1, column=1, padx=5, pady=5)
-
-        exposuret_var = tk.StringVar(value=46)
+        tage_entry = tk.Entry(self.camera_frame, textvariable=tag_var)
+        tage_entry.grid(row=1, column=1, padx=5, pady=5)
+        tage_entry.bind("<Return>", self._update_exp_config("tag", tag_var.get()))
+        
+        # Exposure time
+        exposuret_var = tk.StringVar(value=self.camera_config["ExposureTime"])
         tk.Label(self.camera_frame, text="Exposure t(us):").grid(row=2, column=0, padx=5, pady=5)
-        tk.Entry(self.camera_frame, textvariable=exposuret_var).grid(row=2, column=1, padx=5, pady=5)
+        exposure_entry = tk.Entry(self.camera_frame, textvariable=exposuret_var)
+        exposure_entry.grid(row=2, column=1, padx=5, pady=5)
+        exposure_entry.bind("<Return>", self._update_exposuret)
+
 
         exposuredelay_var = tk.StringVar(value=0)
         tk.Label(self.camera_frame, text="Exposure delay(us)").grid(row=3, column=0, padx=5, pady=5)

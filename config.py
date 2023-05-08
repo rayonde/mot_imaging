@@ -8,6 +8,8 @@ import configparser
 import os
 import numpy as np
 from pathlib import Path
+import tkinter as tk
+import tkinter.filedialog as fd
 
 class Configuration(configparser.ConfigParser):
     """Class to store the configuration variables."""
@@ -204,7 +206,8 @@ class Configuration(configparser.ConfigParser):
     @center.setter
     def center(self, tup):
         self["fit"]["center"] = ",".join(map(str, tup))
-
+    
+    # TODO: check if this is used anywhere
     @property
     def logdict(self):
         """Returns dictionary of all relevant config parameters"""
@@ -222,6 +225,7 @@ class Configuration(configparser.ConfigParser):
             }
         #return ["filename", "magnification", "atom number", "fitted shot", "tof_sequence", "time_sequence", "average_T (uK)", "threeroi", "a_b_ratio", "Comments"]
     ##### Program Settings #####
+
     @property
     def name(self):
         """Returns program name."""
@@ -235,6 +239,12 @@ class Configuration(configparser.ConfigParser):
         """Return the directory of the config.ini file."""
         return os.path.dirname(self.config_file)
     
+
+def update_config_file(config, path):
+    """Update a single value in the config file."""
+    file_path = fd.askopenfilename(path)
+    config.read(file_path)
+    config.config_file = file_path
+    return config
+
 config = Configuration(config_file="config.ini")
-for key in config["camera"].keys():
-    print(key, config["camera"][key])
