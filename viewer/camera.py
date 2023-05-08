@@ -20,6 +20,9 @@ class CameraTab(ttk.Frame):
         ##################################
         # Left column
         ##################################
+        self.left_frame = ttk.Frame(self)
+        self.left_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5, width=200)
+        
         # Information frame
         self._update_info_view()
 
@@ -35,8 +38,8 @@ class CameraTab(ttk.Frame):
         ##################################
         # Camera control frame
         self.right_frame = ttk.Frame(self)
-        #self.right_frame.grid(row=0, column=1, sticky="nsew")
-        self.right_frame.pack(side="right", fill="both", expand=True)
+        self.right_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5, width=200)
+        
     
     def _set_camera_config(self):
         """According to the camera_config distionary, set the parameters to the camera controller"""
@@ -63,10 +66,10 @@ class CameraTab(ttk.Frame):
                 if self.camera_controller.get_config(name) is not None:
                     self.camera_config[name] = self.camera_controller.get_config(name)
 
-    def _update_info_view(self):
+    def _update_info_view(self, frame):
         # Update the view of the camera parameters
-        self.info_frame = ttk.LabelFrame(self, text="Camera Information")
-        self.info_frame.grid(row=0, column=0, padx=5, pady=5)
+        self.info_frame = ttk.LabelFrame(frame, text="Camera Information")
+        self.info_frame.pack(side="top", fill="both", expand=True)
         
         row_id = 0
         for name, entry in self.camera_config.items():
