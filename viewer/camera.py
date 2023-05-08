@@ -17,7 +17,6 @@ class CameraTab(ttk.Frame):
         
         # Update config
         self._get_config()
-
         ##################################
         # Left column
         ##################################
@@ -25,7 +24,7 @@ class CameraTab(ttk.Frame):
         self._update_info_view()
 
         # Camera settings frame
-        self._update_camera_settings()
+    
 
         # Save config button
         self.save = ttk.Button(self, text="Save Config", command=self._save_config())
@@ -41,9 +40,7 @@ class CameraTab(ttk.Frame):
     
     def _set_camera_config(self):
         """According to the camera_config distionary, set the parameters to the camera controller"""
-
-        for name, entry in self.camera_config.items():
-            self.camera_controller.set_config(name, entry.get())
+        pass 
 
     def _update_exp_config(self, name, value):
         """Update the experiment config"""
@@ -51,37 +48,41 @@ class CameraTab(ttk.Frame):
 
 
     def _get_config(self):
-
         # Get config parameters from config.py
-        section = "camera"
+        section = "camera_info"
         section_unit = "unit"
         self.camera_config.update(config[section])
         self.unit_config.update(config[section_unit])
         
         # Get the camera parameters from controller
         if self.camera_controller.isavailable:
-            self.camera_config["AcquisitionMode"] = self.camera_controller.get_config("AcquisitionMode")
-            self.camera_config["PixelFormat"] = self.camera_controller.get_config("PixelFormat")
-        
- 
+            for name in self.camera_config.keys():
+                if name in self.camera_controller.device_config.keys():
+                    self.camera_config[name] = self.camera_controller.device_config[name]
+                
+                if self.camera_controller.get_config(name) is not None:
+                    self.camera_config[name] = self.camera_controller.get_config(name)
+
     def _update_info_view(self):
         # Update the view of the camera parameters
         self.info_frame = ttk.LabelFrame(self, text="Camera Information")
-        self.info_frame.pack(side="left", fill="both", padx=5, pady=5, expand=True)
-
+        self.info_frame.grid(row=0, column=0, padx=5, pady=5)
+        
+        row_id = 0
         for name, entry in self.camera_config.items():
-            text = name.replace("_", " ").capitalize()
-            ttk.Label(self.info_frame, text=text).grid(row=0, column=0, padx=5, pady=5)
-            ttk.Label(self.info_frame, text=entry).grid(row=0, column=1, padx=5, pady=5)
+            ttk.Label(self.info_frame, text=name).grid(row=row_id, column=0, padx=5, pady=5)
+            ttk.Label(self.info_frame, text=entry).grid(row=row_id, column=1, padx=5, pady=5)
             if name in self.unit_config.keys():
-                ttk.Label(self.info_frame, text=self.unit_config[name]).grid(row=0, column=2, padx=5, pady=5)           
-
+                ttk.Label(self.info_frame, text=self.unit_config[name]).grid(row=row_id, column=2, padx=5, pady=5)           
+            row_id += 1
+        
     def _save_config(self):
         # Save the config to config.py
-        for name, entry in self.camera_config.items():
-            section, key = name.split(".")
-            config[section][key] = str(entry.get())
-        config.save()
+        pass
+        # for name, entry in self.camera_config.items():
+        #     section, key = name.split(".")
+        #     config[section][key] = str(entry.get())
+        # config.save()
 
     def _update_settings_view(self):
         # Update the view of the camera parameters
