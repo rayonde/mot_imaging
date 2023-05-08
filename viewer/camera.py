@@ -14,13 +14,13 @@ class CameraTab(ttk.Frame):
         self.unit_config = {}
         self.exp_config = {"image_num": 10, 
                                 "tag": "background"}
+        
+        # Update config
+        self._get_config()
 
         ##################################
         # Left column
         ##################################
-        # Update config
-        self._get_config()
-
         # Information frame
         self._update_info_view()
 
@@ -51,7 +51,7 @@ class CameraTab(ttk.Frame):
 
 
     def _get_config(self):
-        
+
         # Get config parameters from config.py
         section = "camera"
         section_unit = "unit"
