@@ -21,10 +21,10 @@ class CameraTab(ttk.Frame):
         # Left column
         ##################################
         self.left_frame = ttk.Frame(self)
-        self.left_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5, width=200)
+        self.left_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
         
         # Information frame
-        self._update_info_view()
+        self._update_info_view(frame=self.left_frame)
 
         # Camera settings frame
     
@@ -38,7 +38,7 @@ class CameraTab(ttk.Frame):
         ##################################
         # Camera control frame
         self.right_frame = ttk.Frame(self)
-        self.right_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5, width=200)
+        self.right_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
         
     
     def _set_camera_config(self):

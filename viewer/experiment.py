@@ -8,30 +8,43 @@ class ExperimentTab(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
-        self.config_params = {}
+        section = ("beam", "atoms")
+        unit_section = "unit"
+        self.exp_params = {}
 
-        frame = ttk.LabelFrame(self)
-        frame.pack(expand=True)
+        self.left_frame = ttk.Frame(self)
+        self.left_frame.pack(side="left", fill="both", expand=True)
+        
+        self.right_frame = ttk.Frame(self)
+        self.right_frame.pack(side="right", fill="both", expand=True)
+        
+        # Basic parameters
+        section_name = "atoms"
+        basic_frame = ttk.LabelFrame(self.left_frame, text=section_name)
+        basic_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        
+        row_idx = 0
+        for key in config[section_name].keys():
+            text = key.replace("_", " ").capitalize()
+            ttk.Label(basic_frame, text=text).grid(row=row_idx, column=0)
+            unit = config[unit_section].get(key) or None
+            print(unit)
+            if unit:
+                ttk.Label(basic_frame, text=unit).grid(row=row_idx, column=2)
+                entry = FloatEntry(basic_frame, state="disabled")
+                entry.grid(row=row_idx, column=1)
+                entry.insert(0, config[section_name].getfloat(key))
+                self.exp_params[f"{section_name}.{key}"] = entry
+            else:
+                entry = ttk.Entry(basic_frame, state="disabled")
+                entry.grid(row=row_idx, column=1)
+                entry.insert(0, config[section_name].get(key))
+                self.exp_params[f"{section_name}.{key}"] = entry
 
-        p_idx = 0
-        for section in ("camera", "beam"):
-            for key in config[section].keys():
-                text = key.replace("_", " ").capitalize()
-                ttk.Label(frame, text=text).grid(row=p_idx, column=0)
 
-                units = type(config).units.get(section, {}).get(key)
-                if units:
-                    ttk.Label(frame, text=units).grid(row=p_idx, column=2)
 
-                entry = FloatEntry(frame, state="normal")
-                entry.grid(row=p_idx, column=1)
-                entry.insert(0, config[section].getfloat(key))
-                self.config_params[f"{section}.{key}"] = entry
-
-                p_idx += 1
-
-        save = ttk.Button(frame, text="Save", command=self._save_config)
-        save.grid(row=p_idx, column=1)
+        save = ttk.Button(self, text="Save Experiment Config", command=self._save_config)
+        save.pack(side="bottom", fill="x", padx=5, pady=5)
 
     def _save_config(self):
         for name, entry in self.config_params.items():

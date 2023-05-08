@@ -13,6 +13,7 @@ class QueueHandler(logging.Handler):
     """Log handler that outputs to a queue."""
 
     def __init__(self):
+        
         super().__init__()
         self.log_queue = queue.Queue()
 
