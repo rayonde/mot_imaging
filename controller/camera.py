@@ -69,7 +69,7 @@ class CameraController:
         self.cam.UserSetLoad()
 
 
-    def acquisition(self, num_images=10, wait_time=0, pxelformat="Mono8", fileformat='bmp', filename='test', folder='data', tag='beam'):
+    def acquisition(self, num_images=10, wait_time=0, pixelformat="Mono8", fileformat='bmp', filename='test', folder='data', tag='background'):
         """Acquire image."""
         
         # Create ImageProcessor instance for post processing images
@@ -80,7 +80,7 @@ class CameraController:
         
         self.cam.BeginAcquisition()
         logging.info('Camera acquisition starts.')
-
+       
         for i in range(num_images):
             try: 
                 image_result = self.cam.GetNextImage(1000)
@@ -93,7 +93,8 @@ class CameraController:
                     logging.info('Grabbed Image %d, width = %d, height = %d' % (i, width, height))
 
                     # Get image data
-                    image_converted = image_result.Convert(ps.PixelFormat_Mono8, ps.HQ_LINEAR)
+                    if pixelformat == "Mono8":
+                        image_converted = processor.Convert(image_result, ps.PixelFormat_Mono8)
                     # image_data = image_converted.GetData()
 
                     # Save image
@@ -125,7 +126,6 @@ class CameraController:
         self.iface_list.Clear()
         self.system.ReleaseInstance()
         logging.info('Camera controller closed.')
-    
 
     def device_info(self):
         """Print device info."""

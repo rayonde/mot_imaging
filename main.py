@@ -53,13 +53,21 @@ class App():
     def start(self):
         """Run file watcher and start interface."""
         self.file_watcher.start()
+        
+        self.gui.master.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.gui.mainloop()
 
     def cleanup(self):
-        """Pre-GUI shutdown cleanup tasks."""
+        """Clean up threads and file watcher. It will pass to
+        self.controller and will be implemented when self.controller.quit()
+        is called."""
         self.worker.shutdown(wait=False)
         self.file_watcher.stop()
         self.file_watcher.join(3)
+
+    def on_closing(self):
+        """Callback for when the GUI is closed."""
+        self.controller.quit()
 
 if __name__ == "__main__":
     # Get watch directory from command line
