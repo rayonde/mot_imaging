@@ -34,7 +34,7 @@ class CameraTab(ttk.Frame):
         ##################################
         # Right column
         ##################################
-        
+
         self.right_frame = ttk.Frame(self)
         self.right_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
         
@@ -100,22 +100,25 @@ class CameraTab(ttk.Frame):
         tk.Label(self.camera_frame, text="Image N:").grid(row=0, column=0, padx=5, pady=5)
         image_num_entry = tk.Entry(self.camera_frame, textvariable=image_num_var)
         image_num_entry.grid(row=0, column=1, padx=5, pady=5)
-        image_num_entry.bind("<Return>", self._update_exp_config("image_num", int(image_num_entry.get())))
+        image_num_entry.bind("<Return>", lambda event: self._update_exp_config("image_num", int(image_num_entry.get())))
 
         # Tag to represent the image type: background, beam, mot
         tag_default = tk.StringVar(value=self.exp_config["tag"])
         tk.Label(self.camera_frame, text="Tag:").grid(row=1, column=0, padx=5, pady=5)
-        tage_entry = tk.Entry(self.camera_frame, textvariable=tag_default)
-        tage_entry.grid(row=1, column=1, padx=5, pady=5)
-        tage_entry.bind("<Return>", self._update_exp_config("tag", tage_entry.get()))
-        
+
+        tag_options = ["background", "beam", "mot"]
+        tag_selection = tk.OptionMenu(self.camera_frame, tag_default, *tag_options)
+        tag_selection.grid(row=1, column=1, padx=5, pady=5, sticky="snew")
+
+        tag_default.trace_add("write", lambda *args, var=tag_default: self._update_exp_config("tag", var.get()))
+
         # Exposure time
         exposuret_default = self.exp_config["ExposureTime"]
         exposuret_var = tk.DoubleVar(value=exposuret_default) 
         tk.Label(self.camera_frame, text="Exposure time:").grid(row=2, column=0, padx=5, pady=5)
-        exposure_entry = FloatEntry(self.camera_frame, textvariable=exposuret_var)
+        exposure_entry = tk.Entry(self.camera_frame, textvariable=exposuret_var)
         exposure_entry.grid(row=2, column=1, padx=5, pady=5)
-        exposure_entry.bind("<Return>", self._update_exp_config("ExposureTime", float(exposure_entry.get())))
+        exposure_entry.bind("<Return>", lambda event: self._update_exp_config("ExposureTime", float(exposure_entry.get())))
         unit_exposuret = self.unit_config["ExposureTime"]
         tk.Label(self.camera_frame, text=unit_exposuret).grid(row=2, column=2, padx=5, pady=5)
 
@@ -123,9 +126,9 @@ class CameraTab(ttk.Frame):
         exposured_default = self.exp_config["TriggerDelay"]
         exposured_var = tk.DoubleVar(value=exposured_default)
         tk.Label(self.camera_frame, text="Trigger delay:").grid(row=3, column=0, padx=5, pady=5)
-        exposured_entry = FloatEntry(self.camera_frame, textvariable=exposured_var)
+        exposured_entry = tk.Entry(self.camera_frame, textvariable=exposured_var)
         exposured_entry.grid(row=3, column=1, padx=5, pady=5)
-        exposured_entry.bind("<Return>", self._update_exp_config("TriggerDelay", float(exposured_entry.get())))
+        exposured_entry.bind("<Return>", lambda event: self._update_exp_config("TriggerDelay", float(exposured_entry.get())))
         unit_exposured = self.unit_config["TriggerDelay"]
         tk.Label(self.camera_frame, text=unit_exposured).grid(row=3, column=2, padx=5, pady=5)
 
