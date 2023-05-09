@@ -18,28 +18,22 @@ class CameraTab(ttk.Frame):
         
         # Update config
         self._get_config()
-        ##################################
+        
         # Left column
-        ##################################
         self.left_frame = ttk.Frame(self)
         self.left_frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        
-        # Information frame
         self._update_info_view(frame=self.left_frame)
-        
         self._camera_control_button_left(frame=self.left_frame)
-        ##################################
+       
         # Right column
-        ##################################
         self.right_frame = ttk.Frame(self)
         self.right_frame.pack(side="right", fill="both", expand=True, padx=5, pady=5)
         
-        # Camera setting frame
         self._update_camera_setting_view(frame=self.right_frame)
-
         self._camera_control_button_right(frame=self.right_frame)
  
     def _get_config(self):
+        """Initialize the configuration variables."""
         # Load all parameters from config.py
         info_section = "camera_info"
         config_section = "camera"
@@ -49,26 +43,11 @@ class CameraTab(ttk.Frame):
         self.unit_config.update(config[unit_section])
         
         # Update the camera info/config from controller
-        if self.camera_controller.isavailable:
-            for name in self.camera_config.keys():
-                if name in self.camera_controller.device_config.keys():
-                    self.camera_config[name] = self.camera_controller.device_config[name]
-                
-                updated_config = None
-                updated_config = self.camera_controller.get_config(name)
-                if updated_config is not None:
-                    self.camera_config[name] = updated_config
-        
-        # Get the camera setting from config.py
-        setting_section = "camera"
-        self.exp_config.update(config[setting_section])
-        
-        self.exp_config["ExposureTime"] = float(self.exp_config["ExposureTime"])
-        self.exp_config["TriggerDelay"] = float(self.exp_config["TriggerDelay"])
-        self.exp_config["Gain"] = float(self.exp_config["Gain"])
-        self.exp_config["WaitTime"] = float(self.exp_config["WaitTime"])
+        self._update_info()
+        self._update_setting()
     
     def _update_info(self):
+        """Update the camera information from the controller."""
         if self.camera_controller.isavailable:
             for name in self.camera_info.keys():
                 if name in self.camera_controller.device_config.keys():
@@ -78,15 +57,23 @@ class CameraTab(ttk.Frame):
                 if result is not None:
                     self.camera_info[name] = result
 
+    def _update_setting(self):
+        """Update the camera setting from the controller."""
+        if self.camera_controller.isavailable:
+            for name in self.camera_config.keys():
+                result = self.camera_controller.get_config(name)
+                if result is not None:
+                    self.exp_config[name] = result
+
     def _update_info_view(self, frame):
-        # Update the view of the camera parameters
+        """ Display the camera information frame."""
         self.info_frame = ttk.LabelFrame(frame, text="Camera Information")
         self.info_frame.pack(side="top", fill="both", expand=True, padx=5, pady=5)
         
         row_id = 0
-        for name, entry in self.camera_config.items():
+        for name, value in self.camera_info.items():
             ttk.Label(self.info_frame, text=name).grid(row=row_id, column=0, padx=5, pady=5)
-            ttk.Label(self.info_frame, text=entry).grid(row=row_id, column=1, padx=5, pady=5)
+            ttk.Label(self.info_frame, text=value).grid(row=row_id, column=1, padx=5, pady=5)
             if name in self.unit_config.keys():
                 ttk.Label(self.info_frame, text=self.unit_config[name]).grid(row=row_id, column=2, padx=5, pady=5)           
             row_id += 1
@@ -108,7 +95,6 @@ class CameraTab(ttk.Frame):
             config[section][key] = str(item)
         config.save()
 
-
     def _update_camera_setting_view(self, frame):
         # Update the view of the camera parameters
         self.camera_frame = ttk.LabelFrame(frame, text="Camera Settings")
@@ -125,20 +111,18 @@ class CameraTab(ttk.Frame):
         # Tag to represent the image type: background, beam, mot
         tag_default = tk.StringVar(value=self.exp_config["tag"])
         tk.Label(self.camera_frame, text="Tag:").grid(row=1, column=0, padx=5, pady=5)
-
         tag_options = ["background", "beam", "mot"]
         tag_selection = tk.OptionMenu(self.camera_frame, tag_default, *tag_options)
         tag_selection.grid(row=1, column=1, padx=5, pady=5, sticky="snew")
-
         tag_default.trace_add("write", lambda *args, var=tag_default: self._update_exp_config("tag", var.get()))
 
         # Exposure time
-        exposuret_default = self.exp_config["ExposureTime"]
+        exposuret_default = self.camera_config["ExposureTime"]
         exposuret_var = tk.DoubleVar(value=exposuret_default) 
         tk.Label(self.camera_frame, text="Exposure time:").grid(row=2, column=0, padx=5, pady=5)
         exposure_entry = tk.Entry(self.camera_frame, textvariable=exposuret_var)
         exposure_entry.grid(row=2, column=1, padx=5, pady=5)
-        exposure_entry.bind("<Return>", lambda event: self._update_exp_config("ExposureTime", float(exposure_entry.get())))
+        exposure_entry.bind("<Return>", lambda event: self._update_camera_config("ExposureTime", float(exposure_entry.get())))
         unit_exposuret = self.unit_config["ExposureTime"] or ""
         tk.Label(self.camera_frame, text=unit_exposuret).grid(row=2, column=2, padx=5, pady=5)
 
@@ -148,29 +132,27 @@ class CameraTab(ttk.Frame):
         tk.Label(self.camera_frame, text="Trigger delay:").grid(row=3, column=0, padx=5, pady=5)
         exposured_entry = tk.Entry(self.camera_frame, textvariable=exposured_var)
         exposured_entry.grid(row=3, column=1, padx=5, pady=5)
-        exposured_entry.bind("<Return>", lambda event: self._update_exp_config("TriggerDelay", float(exposured_entry.get())))
+        exposured_entry.bind("<Return>", lambda event: self._update_camera_config("TriggerDelay", float(exposured_entry.get())))
         unit_exposured = self.unit_config["TriggerDelay"] or ""
         tk.Label(self.camera_frame, text=unit_exposured).grid(row=3, column=2, padx=5, pady=5)
 
         # Trigger source
-        exposured_default = self.exp_config["TriggerDelay"]
-        exposured_var = tk.DoubleVar(value=exposured_default)
-        tk.Label(self.camera_frame, text="Trigger delay:").grid(row=3, column=0, padx=5, pady=5)
-        exposured_entry = tk.Entry(self.camera_frame, textvariable=exposured_var)
-        exposured_entry.grid(row=3, column=1, padx=5, pady=5)
-        exposured_entry.bind("<Return>", lambda event: self._update_exp_config("TriggerDelay", float(exposured_entry.get())))
-        unit_exposured = self.unit_config["TriggerDelay"] or ""
-        tk.Label(self.camera_frame, text=unit_exposured).grid(row=3, column=2, padx=5, pady=5)
+        tag_default = tk.StringVar(value=self.exp_config["tag"])
+        tk.Label(self.camera_frame, text="Tag:").grid(row=1, column=0, padx=5, pady=5)
+        tag_options = ["background", "beam", "mot"]
+        tag_selection = tk.OptionMenu(self.camera_frame, tag_default, *tag_options)
+        tag_selection.grid(row=1, column=1, padx=5, pady=5, sticky="snew")
+        tag_default.trace_add("write", lambda *args, var=tag_default: self._update_exp_config("tag", var.get()))
 
         # Wait time
-        waittime_default = self.exp_config["WaitTime"]
-        waittime_var = tk.DoubleVar(value=waittime_default)
+        wait_time_default = self.exp_config["wait_time"]
+        wait_time_var = tk.DoubleVar(value=wait_time_default)
         tk.Label(self.camera_frame, text="Wait time:").grid(row=4, column=0, padx=5, pady=5)
-        waittime_entry = tk.Entry(self.camera_frame, textvariable=waittime_var)
-        waittime_entry.grid(row=4, column=1, padx=5, pady=5)
-        waittime_entry.bind("<Return>", lambda event: self._update_exp_config("WaitTime", float(waittime_entry.get())))
-        unit_waittime = self.unit_config["WaitTime"] or ""
-        tk.Label(self.camera_frame, text=unit_waittime).grid(row=4, column=2, padx=5, pady=5)
+        wait_time_entry = tk.Entry(self.camera_frame, textvariable=wait_time_var)
+        wait_time_entry.grid(row=4, column=1, padx=5, pady=5)
+        wait_time_entry.bind("<Return>", lambda event: self._update_exp_config("wait_time", float(wait_time_entry.get())))
+        unit_wait_time = self.unit_config["wait_time"] or ""
+        tk.Label(self.camera_frame, text=unit_wait_time).grid(row=4, column=2, padx=5, pady=5)
         
         # File format
         fileformat_default = tk.StringVar(value=self.exp_config["fileformat"])
@@ -195,9 +177,9 @@ class CameraTab(ttk.Frame):
     
     def _camera_control_button_left(self, frame):
         # Config the trigger setting button
-        exposure_time = self.exp_config["ExposureTime"] or 'min'
+        exposure_time = self.camera_config["ExposureTime"] or 'min'
         trigger_source = self.camera_config["TriggerSource"] or 'Line1'
-        trigger_delay = self.exp_config["TriggerDelay"] or 0.0
+        trigger_delay = self.camera_config["TriggerDelay"] or 0.0
         
         self.config_trigger_button = ttk.Button(
             frame, 
@@ -220,7 +202,7 @@ class CameraTab(ttk.Frame):
         
         # Start the acquisition
         num = self.exp_config["image_num"] or 1
-        wait_time = self.exp_config["WaitTime"] or 0.0
+        wait_time = self.exp_config["wait_time"] or 0.0
 
         self.acquisition_button = ttk.Button(
             frame,
