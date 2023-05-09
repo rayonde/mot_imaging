@@ -38,9 +38,11 @@ class CameraTab(ttk.Frame):
         info_section = "camera_info"
         config_section = "camera"
         unit_section = "unit"
+        exp_section = "experiment"
         self.camera_info.update(config[info_section])
         self.camera_config.update(config[config_section])
         self.unit_config.update(config[unit_section])
+        self.exp_config.update(config[exp_section])
         
         # Update the camera info/config from controller
         self._update_info()
@@ -51,7 +53,7 @@ class CameraTab(ttk.Frame):
         if self.camera_controller.isavailable:
             for name in self.camera_info.keys():
                 if name in self.camera_controller.device_config.keys():
-                    self.camera_info[name] = self.camera_controller.device_config(name)
+                    self.camera_info[name] = self.camera_controller.device_config[name]
                 
                 result = self.camera_controller.get_config(name)
                 if result is not None:
@@ -91,8 +93,9 @@ class CameraTab(ttk.Frame):
     def _save_config(self):
         # Save the camera info to config.ini
         section = "camera_info"
-        for key, item in self.camera_config.items():
-            config[section][key] = str(item)
+        for key, item in self.camera_info.items():
+            config[section][key] = item
+            
         config.save()
 
     def _update_camera_setting_view(self, frame):
