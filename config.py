@@ -14,19 +14,10 @@ import tkinter.filedialog as fd
 class Configuration(configparser.ConfigParser):
     """Class to store the configuration variables."""
         
-    units = {
-        "camera": {"pixel_size": "mm"},
-        "beam": {
-            "wavelength": "nm",
-            "magnification": "x",
-            "detuning": "MHz",
-            "linewidth": "MHz",
-        },
-    }
-
     def __init__(self, config_file="config.ini"):
         super().__init__()
         self.config_file = config_file
+        self.optionxform = lambda option: option
         self.read(config_file)
 
         # Non-persistent attributes
@@ -66,30 +57,37 @@ class Configuration(configparser.ConfigParser):
     @property
     def pixel_size(self):
         """Camera pixel size in mm."""
-        return self.getfloat("camera", "pixel_size") * 1e-3
+        return self.getfloat("camera_info", "RealPixelSize") * 1e-3
     
     @property
     def exposure_time(self):
         """Camera pixel size in us."""
-        return self.getfloat("camera", "exposure_time") 
+        return self.getfloat("camera", "ExposureTime") 
     
     @property
     def trigger_delay(self):
         """Camera pixel size in us."""
-        return self.getfloat("camera", "exposure_time") 
+        return self.getfloat("camera", "TriggerDelay") 
     
     
     ##### Atom Settings #####
-    @property
-    def repump_time(self):
-        """Repump time in ms."""
-        return self.getfloat("atoms", "repump_time")
-
     @property
     def atom_mass(self):
         """Atom mass in kg."""
         return self.getfloat("atoms", "mass")
     
+    ##### Repump Settings #####
+    @property
+    def repump_time(self):
+        """Repump time in ms."""
+        return self.getfloat("repump", "repump_time")
+
+    ##### Cooling Settings #####
+    @property
+    def repump_time(self):
+        """Repump time in ms."""
+        return self.getfloat("cooling", "cooling_time")
+
     ##### Beam Settings #####
     @property
     def magnification(self):

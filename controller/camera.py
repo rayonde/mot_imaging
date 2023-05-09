@@ -263,7 +263,6 @@ class CameraController:
                 node_feature = node.GetValue()
                 
                 if ps.IsReadable(node):
-                    print("test")
                     logging.info('%s: %s' % (node.GetName(), node_feature))
                     return node_feature
                 else:
