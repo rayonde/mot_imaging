@@ -24,8 +24,8 @@ class CameraController:
         self.device_config={}
 
         self.find_camera()
-        self.device_info()
-    
+        if self.isavailable:
+            self.device_info()
         
     def find_camera(self):
         self.system = ps.System.GetInstance()

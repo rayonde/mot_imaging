@@ -66,30 +66,30 @@ class Configuration(configparser.ConfigParser):
     @property
     def pixel_size(self):
         """Camera pixel size in mm."""
-        return self.getfloat("camera", "pixel_size") * 1e-3
+        return self.getfloat("camera_info", "RealPixelSize") * 1e-3
     
     @property
     def exposure_time(self):
         """Camera pixel size in us."""
-        return self.getfloat("camera", "exposure_time") 
+        return self.getfloat("camera", "ExposureTime") 
     
     @property
     def trigger_delay(self):
-        """Camera pixel size in us."""
-        return self.getfloat("camera", "exposure_time") 
-    
+        """Camera trigger delay."""
+        return self.getfloat("camera_info", "TriggerDelay") 
     
     ##### Atom Settings #####
-    @property
-    def repump_time(self):
-        """Repump time in ms."""
-        return self.getfloat("atoms", "repump_time")
-
     @property
     def atom_mass(self):
         """Atom mass in kg."""
         return self.getfloat("atoms", "mass")
     
+    ##### Repump Settings #####
+    @property
+    def repump_time(self):
+        """Repump time in ms."""
+        return self.getfloat("repump", "repump_time")
+
     ##### Beam Settings #####
     @property
     def magnification(self):
@@ -207,7 +207,6 @@ class Configuration(configparser.ConfigParser):
     def center(self, tup):
         self["fit"]["center"] = ",".join(map(str, tup))
     
-    # TODO: check if this is used anywhere
     @property
     def logdict(self):
         """Returns dictionary of all relevant config parameters"""
