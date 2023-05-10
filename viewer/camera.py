@@ -94,7 +94,7 @@ class CameraTab(ttk.Frame):
         # Save the camera info to config.ini
         section = "camera_info"
         for key, item in self.camera_info.items():
-            config[section][key] = item
+            config[section][key] = str(item)
             
         config.save()
 
