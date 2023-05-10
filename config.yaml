@@ -10,31 +10,31 @@ beam:
   magnification: 0.3333
   wavelength: 680.24602
 camera:
-  ExposureAuto: false
+  ExposureAuto: Continuous
   ExposureCompensation: 0
   ExposureCompensationAuto: false
   ExposureMode: Timed
-  ExposureTime: 46.0
+  ExposureTime: 999.0
   Gain: 0.0
-  GainAuto: false
+  GainAuto: Continuous
   SharpnessAuto: false
   TriggerActivation: RisingEdge
-  TriggerDelay: 0.0
+  TriggerDelay: 208.0
   TriggerDelayEnable: false
-  TriggerMode: true
-  TriggerSelector: FrameStart
-  TriggerSource: Line1
-camera_info:
-  AcquisitionMode: MultiFrame
-  DeviceModelName: null
-  ExposureMode: Timed
-  Height: 964
-  PixelFormat: Mono8
-  RealPixelSize: null
   TriggerMode: 'Off'
   TriggerSelector: FrameStart
-  TriggerSource: Line0
-  Width: 1288
+  TriggerSource: Software
+camera_info:
+  AcquisitionMode: Continuous
+  DeviceModelName: Blackfly S BFS-U3-200S6M
+  ExposureMode: Timed
+  Height: 3648
+  PixelFormat: Mono8
+  RealPixelSize: 3.75
+  TriggerMode: 'Off'
+  TriggerSelector: FrameStart
+  TriggerSource: Software
+  Width: 5472
 cooling:
   cooling_current: 2300
   cooling_detuninglist:
@@ -53,16 +53,16 @@ experiment:
   ExposureCompensation: null
   ExposureCompensationAuto: null
   ExposureMode: Timed
-  ExposureTime: 79.4529914855957
+  ExposureTime: 999.0
   Gain: 0.0
   GainAuto: Continuous
-  SharpnessAuto: Continuous
-  TriggerActivation: FallingEdge
-  TriggerDelay: 0.0
+  SharpnessAuto: null
+  TriggerActivation: null
+  TriggerDelay: 208.0
   TriggerDelayEnable: null
   TriggerMode: 'Off'
   TriggerSelector: FrameStart
-  TriggerSource: Line0
+  TriggerSource: Software
   fileformat: bmp
   filename: f2_ai
   folder: /data/

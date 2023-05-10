@@ -37,18 +37,22 @@ class CameraTab(ttk.Frame):
         """Update the camera information from the controller."""
         if self.camera_controller.isavailable:
             for name in self.camera_info.keys():
+
                 if name in self.camera_controller.device_config.keys():
                     self.camera_info[name] = self.camera_controller.device_config[name]
                 
-                result = self.camera_controller.get_config(name)
-                self.camera_info[name] = result
-
+                else: 
+                    result = self.camera_controller.get_config(name)
+                    if result:
+                        self.camera_info[name] = result
+                
     def _update_setting(self):
         """Update the camera setting from the controller."""
         if self.camera_controller.isavailable:
             for name in self.camera_config.keys():
                 result = self.camera_controller.get_config(name)
-                self.exp_config[name] = result
+                if result:
+                    self.camera_config[name] = result
 
     def _update_info_view(self, frame):
         """ Display the camera information frame."""
