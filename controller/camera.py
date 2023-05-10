@@ -4,6 +4,14 @@ import time
 import logging
 from platform import node 
 import os 
+import threading
+
+def thread(func):
+    def wrapper(*args, **kwargs):
+        t = threading.Thread(target=func, args=args, kwargs=kwargs)
+        t.start()
+        return t
+    return wrapper
 
 class CameraController:
     def __init__(self) -> None:
@@ -29,6 +37,7 @@ class CameraController:
     
         
     def find_camera(self):
+        logging.info('============= find camera =============')
         self.system = ps.System.GetInstance()
         self.cam_list = self.system.GetCameras()
         self.version = self.system.GetLibraryVersion()
@@ -69,7 +78,7 @@ class CameraController:
         self.cam.UserSetSelector.SetValue(ps.UserSetSelector_Default)
         self.cam.UserSetLoad()
 
-
+    @thread
     def acquisition(self, num_images=10, wait_time=0, pixelformat="Mono8", fileformat='bmp', filename='test', folder='data', tag='background'):
         """Acquire image."""
         
@@ -130,7 +139,7 @@ class CameraController:
 
     def device_info(self):
         """Print device info."""
-        
+        logging.info('============= device info update =============')
         node_device_information = ps.CCategoryPtr(self.nodemap_tldevice.GetNode('DeviceInformation'))
         if ps.IsAvailable(node_device_information) and ps.IsReadable(node_device_information):
             features = node_device_information.GetFeatures()
@@ -141,31 +150,28 @@ class CameraController:
                 
                 if ps.IsReadable(feature):
                     self.device_config[node_feature.GetName()] = node_feature.ToString() 
-
         else:
             logging.info('Device control information not available.')
     
     def config_trigger(self, exposure_time='min', trigger='Line3', trigger_delay=0.0):
         """Configure trigger."""
-        
+        logging.info('============= config trigger =============')
         self.set_config('TriggerMode', 'Off')
-        # self.set_config('GainAuto', 'Off')
-        # self.set_config('TriggerSource', trigger)
-        # self.set_config('TriggerSelector', 'FrameStart')
-        # self.set_config('TriggerActivation', 'RisingEdge')
+        self.set_config('GainAuto', 'Off')
+        self.set_config('TriggerSource', trigger)
+        self.set_config('TriggerSelector', 'FrameStart')
+        self.set_config('TriggerActivation', 'RisingEdge')
 
-        # if trigger_delay>0.0:
-        #     self.set_config('TriggerDelayEnabled', True)
-        #     self.set_config('TriggerDelay', trigger_delay)
-        # else:
-        #     self.set_config('TriggerDelayEnabled', False)
+        if trigger_delay>0.0:
+            self.set_config('TriggerDelayEnabled', True)
+        self.set_config('TriggerDelay', trigger_delay)
 
-        # self.set_config('ExposureMode', 'Timed')
-        # self.set_config('ExposureAuto', 'Off')
-        # self.set_config('ExposureTime', exposure_time)
-        # self.set_config('ExposureAuto', 'Off')
-        # self.set_config('TriggerMode', 'On')
-        # self.set_config('AcquisitionMode', 'Continuous')
+        self.set_config('ExposureMode', 'Timed')
+        self.set_config('ExposureAuto', 'Off')
+        self.set_config('ExposureTime', exposure_time)
+        self.set_config('ExposureAuto', 'Off')
+        self.set_config('TriggerMode', 'On')
+        self.set_config('AcquisitionMode', 'Continuous')
     
     def config_fomat(self, pixel_format='Mono8'):
         """Configure image format."""
@@ -177,9 +183,8 @@ class CameraController:
         node_address = self.nodemap.GetNode(nodename)
    
         if ps.IsAvailable(node_address):
-            print("=====================================================")
-            print(ps.CEnumerationPtr(node_address).IsValid())
-            if ps.IsReadable(ps.CEnumerationPtr(node_address)) and ps.IsWritable(ps.CEnumerationPtr(node_address)):
+
+            if ps.CEnumerationPtr(node_address).IsValid():
                 node = ps.CEnumerationPtr(node_address)
                 node_entry = ps.CEnumEntryPtr(node.GetEntryByName(value))
                 entry_value = node_entry.GetValue()
@@ -187,7 +192,7 @@ class CameraController:
                 node.SetIntValue(entry_value)
                 logging.info('%s set to %s' % (node.GetName(), value))
             
-            elif ps.IsReadable(ps.CIntegerPtr(node_address)) and ps.IsWritable(ps.CIntegerPtr(node_address)):
+            elif ps.CIntegerPtr(node_address).IsValid():
                 node = ps.CIntegerPtr(node_address)
 
                 if isinstance(value, str):
@@ -206,7 +211,7 @@ class CameraController:
                 else:
                     logging.info('Value %s is out of range.' % value)
             
-            elif ps.IsReadable(ps.CFloatPtr(node_address)) and ps.IsWritable(ps.CFloatPtr(node_address)):
+            elif ps.CFloatPtr(node_address).IsValid():
                 node = ps.CFloatPtr(node_address)
 
                 if isinstance(value, str):
@@ -225,7 +230,7 @@ class CameraController:
                 else:
                     logging.info('Value %s is out of range.' % value)
 
-            elif ps.IsReadable(ps.CBooleanPtr(node_address)) and ps.IsWritable(ps.CBooleanPtr(node_address)):
+            elif ps.CBooleanPtr(node_address).IsValid():
                 node = ps.CBooleanPtr(node_address)
                 
                 value = bool(value)
@@ -240,7 +245,7 @@ class CameraController:
         """Get config node."""
         node_address = self.nodemap.GetNode(nodename)
         
-        if ps.IsAvailable (node_address):
+        if ps.IsAvailable(node_address):
             # Enumeration node
             if ps.CEnumerationPtr(node_address).IsValid():
                 node = ps.CEnumerationPtr(node_address)
@@ -251,7 +256,7 @@ class CameraController:
                     logging.info('%s: %s' % (node.GetName(), node_feature_symbol))
                     return node_feature_symbol
                 else:
-                    logging.info('Unable to get %s' % node.GetName())
+                    logging.info('(Enumeration)Unable to get %s' % node.GetName())
 
             # Integer node
             elif ps.CIntegerPtr(node_address).IsValid():
@@ -262,7 +267,7 @@ class CameraController:
                     logging.info('%s: %s' % (node.GetName(), node_feature))
                     return node_feature
                 else:
-                    logging.info('Unable to get %s' % node.GetName())
+                    logging.info('(Int)Unable to get %s' % node.GetName())
             
             # Float node
             elif ps.CFloatPtr(node_address).IsValid():
@@ -273,7 +278,7 @@ class CameraController:
                     logging.info('%s: %s' % (node.GetName(), node_feature))
                     return node_feature
                 else:
-                    logging.info('Unable to get %s' % node.GetName())
+                    logging.info('(Float)Unable to get %s' % node.GetName())
             
             # Boolean node
             elif ps.CBooleanPtr(node_address).IsValid():
@@ -284,7 +289,7 @@ class CameraController:
                     logging.info('%s: %s' % (node.GetName(), node_feature))
                     return node_feature
                 else:
-                    logging.info('Unable to get %s' % node.GetName())
+                    logging.info('(Bool)Unable to get %s' % node.GetName())
 
             elif ps.CCommandPtr(node_address).IsValid():
                 logging.info('Command node is not supported temporarily.')
@@ -295,4 +300,4 @@ class CameraController:
             elif ps.CCategoryPtr(node_address).IsValid():
                 logging.info('Category node is not supported temporarily.') 
         else: 
-            logging.info('Unable to get %s' % nodename)
+            logging.info('%s node address is not available' % nodename)

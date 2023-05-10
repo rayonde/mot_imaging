@@ -10,31 +10,31 @@ beam:
   magnification: 0.3333
   wavelength: 680.24602
 camera:
-  ExposureAuto: Continuous
+  ExposureAuto: 'Off'
   ExposureCompensation: 0
   ExposureCompensationAuto: false
   ExposureMode: Timed
-  ExposureTime: 999.0
+  ExposureTime: 79.4529914855957
   Gain: 0.0
-  GainAuto: Continuous
-  SharpnessAuto: false
+  GainAuto: 'Off'
+  SharpnessAuto: Continuous
   TriggerActivation: RisingEdge
-  TriggerDelay: 208.0
+  TriggerDelay: 12.159347534179688
   TriggerDelayEnable: false
-  TriggerMode: 'Off'
+  TriggerMode: 'On'
   TriggerSelector: FrameStart
-  TriggerSource: Software
+  TriggerSource: Line0
 camera_info:
   AcquisitionMode: Continuous
-  DeviceModelName: Blackfly S BFS-U3-200S6M
+  DeviceModelName: Chameleon3 CM3-U3-13S2M
   ExposureMode: Timed
-  Height: 3648
+  Height: 964
   PixelFormat: Mono8
   RealPixelSize: 3.75
-  TriggerMode: 'Off'
+  TriggerMode: 'On'
   TriggerSelector: FrameStart
-  TriggerSource: Software
-  Width: 5472
+  TriggerSource: Line0
+  Width: 1288
 cooling:
   cooling_current: 2300
   cooling_detuninglist:
