@@ -6,17 +6,20 @@ from collections import defaultdict
 from pathlib import Path
 from datetime import date
 
-
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
-
 
 class FileWatcher(Observer):
     """Wrap watchdog.observers.Observer to handle Shot BMP observation."""
 
     def __init__(self, directory, *, process_shot):
+        """
+        Args:directory: directory to watch for bmp files 
+            process_shot: function to process the shots"""
         super().__init__()
-
+        
+        # process_shot pass function to process the shots 
+        # before moving the images to the Raw Data folder
         self.process_shot = process_shot
 
         self.event_handler = _create_handler(self._check_and_dispatch)

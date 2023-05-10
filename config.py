@@ -17,7 +17,6 @@ class Configuration(dict):
         self.three_roi_enabled = False
         self.fix_center = False
  
-
     def save(self):
         """Save the current configuration to the config file."""
         with open(self.config_file, "w") as f:
