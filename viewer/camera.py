@@ -143,7 +143,7 @@ class CameraTab(ttk.Frame):
         wait_time_entry.grid(row=5, column=1, padx=5, pady=5)
         wait_time_entry.bind("<Return>", lambda event: self._update_exp_config("wait_time", float(wait_time_entry.get())))
         unit_wait_time = self.unit_config["wait_time"] or ""
-        tk.Label(self.camera_frame, text=unit_wait_time).grid(row=4, column=2, padx=5, pady=5)
+        tk.Label(self.camera_frame, text=unit_wait_time).grid(row=5, column=2, padx=5, pady=5)
         
         # File format
         fileformat_default = tk.StringVar(value=self.exp_config["fileformat"])

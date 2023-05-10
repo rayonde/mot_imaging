@@ -64,22 +64,21 @@ class ExperimentTab(ttk.Frame):
             var = config[section_name].get(key)
             has_unit = True if unit else False
             
-            if type(var) == float:
+            if isinstance(var, float):
                 entry = FloatEntry(frame)
                 entry.grid(row=row_idx, column=1)
                 entry.insert(0, var)
                 entry.bind('<<Modified>>', lambda event: self.exp_params[f"{section_name}.{key}"].set(float(entry.get())))
-            elif type(var) == int:
+            elif isinstance(var, int):
                 entry = ttk.Entry(frame)
                 entry.grid(row=row_idx, column=1)
                 entry.insert(0, var)
                 entry.bind('<<Modified>>', lambda event: self.exp_params[f"{section_name}.{key}"].set(int(entry.get())))
-            elif type(var) == list:
+            elif isinstance(var, list):
                 entry = ttk.Entry(frame)
                 entry.grid(row=row_idx, column=1)
                 entry.insert(0, self.tostring(var))
                 entry.bind('<<Modified>>', lambda event: self.exp_params[f"{section_name}.{key}"].set(self.tolist(entry.get())))
-
             else:
                 entry = ttk.Entry(frame)
                 entry.grid(row=row_idx, column=1)
@@ -96,7 +95,8 @@ class ExperimentTab(ttk.Frame):
             section, key = name.split(".")
             if item:
                 config[section][key] = item
-
+        
+        print(self.exp_params["cooling.cooling_frequency"])
         print(config["cooling"]["cooling_current"])
         config.save()
         

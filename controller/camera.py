@@ -130,7 +130,8 @@ class CameraController:
         logging.info('Camera acquisition ends.')
     
     def close(self):
-        self.cam.DeInit()
+        if self.cam: 
+            self.cam.DeInit()
         del self.cam
         self.cam_list.Clear()
         self.iface_list.Clear()
@@ -162,8 +163,6 @@ class CameraController:
         self.set_config('TriggerSelector', 'FrameStart')
         self.set_config('TriggerActivation', 'RisingEdge')
 
-        if trigger_delay>0.0:
-            self.set_config('TriggerDelayEnabled', True)
         self.set_config('TriggerDelay', trigger_delay)
 
         self.set_config('ExposureMode', 'Timed')
@@ -175,7 +174,6 @@ class CameraController:
     
     def config_fomat(self, pixel_format='Mono8'):
         """Configure image format."""
-
         self.set_config('PixelFormat', pixel_format)
       
     def set_config(self, nodename, value):
