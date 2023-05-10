@@ -515,7 +515,7 @@ class ExperimentParams(ttk.Frame):
 
                 entry = FloatEntry(frame, state="normal")
                 entry.grid(row=p_idx, column=1)
-                entry.insert(0, config[section].getfloat(key))
+                entry.insert(0, config[section].get(key))
                 self.config_params[f"{section}.{key}"] = entry
 
                 p_idx += 1

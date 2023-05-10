@@ -11,13 +11,14 @@ class CameraTab(ttk.Frame):
         self.master = master
         self.camera_controller = controller.camera_controller
         
-        self.camera_info = {}
-        self.camera_config = {}
-        self.unit_config = {}
-        self.exp_config = {}
+        self.camera_info = config["camera_info"]
+        self.camera_config = config["camera"]
+        self.unit_config = config["unit"]
+        self.exp_config = config["experiment"]
         
         # Update config
-        self._get_config()
+        self._update_info()
+        self._update_setting()
         
         # Left column
         self.left_frame = ttk.Frame(self)
@@ -31,22 +32,6 @@ class CameraTab(ttk.Frame):
         
         self._update_camera_setting_view(frame=self.right_frame)
         self._camera_control_button_right(frame=self.right_frame)
- 
-    def _get_config(self):
-        """Initialize the configuration variables."""
-        # Load all parameters from config.py
-        info_section = "camera_info"
-        config_section = "camera"
-        unit_section = "unit"
-        exp_section = "experiment"
-        self.camera_info.update(config[info_section])
-        self.camera_config.update(config[config_section])
-        self.unit_config.update(config[unit_section])
-        self.exp_config.update(config[exp_section])
-        
-        # Update the camera info/config from controller
-        self._update_info()
-        self._update_setting()
     
     def _update_info(self):
         """Update the camera information from the controller."""
@@ -56,16 +41,14 @@ class CameraTab(ttk.Frame):
                     self.camera_info[name] = self.camera_controller.device_config[name]
                 
                 result = self.camera_controller.get_config(name)
-                if result is not None:
-                    self.camera_info[name] = result
+                self.camera_info[name] = result
 
     def _update_setting(self):
         """Update the camera setting from the controller."""
         if self.camera_controller.isavailable:
             for name in self.camera_config.keys():
                 result = self.camera_controller.get_config(name)
-                if result is not None:
-                    self.exp_config[name] = result
+                self.exp_config[name] = result
 
     def _update_info_view(self, frame):
         """ Display the camera information frame."""
@@ -91,13 +74,12 @@ class CameraTab(ttk.Frame):
         logging.info("Update the camera parameters: {} = {}".format(name, value))
 
     def _save_config(self):
-        # Save the camera info to config.ini
-        section = "camera_info"
-        for key, item in self.camera_info.items():
-            config[section][key] = str(item)
-            
-        config.save()
-
+        if self.camera_controller.isavailable:
+            config.save()
+            logging.info("Camera available. Save the configuration file.")
+        else:
+            logging.warning("Camera not available. Do not save the configuration file.")
+    
     def _update_camera_setting_view(self, frame):
         # Update the view of the camera parameters
         self.camera_frame = ttk.LabelFrame(frame, text="Camera Settings")
@@ -180,9 +162,9 @@ class CameraTab(ttk.Frame):
     
     def _camera_control_button_left(self, frame):
         # Config the trigger setting button
-        exposure_time = self.camera_config["ExposureTime"] or 'min'
-        trigger_source = self.camera_config["TriggerSource"] or 'Line1'
-        trigger_delay = self.camera_config["TriggerDelay"] or 0.0
+        exposure_time = self.camera_config["ExposureTime"] 
+        trigger_source = self.camera_config["TriggerSource"]
+        trigger_delay = self.camera_config["TriggerDelay"] 
         
         self.config_trigger_button = ttk.Button(
             frame, 
@@ -202,10 +184,9 @@ class CameraTab(ttk.Frame):
         self.reset_button.pack(side="top", fill="both", expand=True, padx=5, pady=5)
     
     def _camera_control_button_right(self, frame):
-        
         # Start the acquisition
-        num = self.exp_config["image_num"] or 1
-        wait_time = self.exp_config["wait_time"] or 0.0
+        num = self.exp_config["image_num"] 
+        wait_time = self.exp_config["wait_time"] 
 
         self.acquisition_button = ttk.Button(
             frame,
@@ -219,5 +200,4 @@ class CameraTab(ttk.Frame):
         self.camera_controller.config_trigger()
         self._update_camera_config()
         
-        self._get_config()
         self._update_info_view(frame=self.left_frame)

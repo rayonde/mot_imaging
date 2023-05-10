@@ -1,0 +1,152 @@
+atoms:
+  atom: Rb87
+  coil_current: 0.0
+  dispenser_current: 0.0
+  mass: 1.443160648e-25
+beam:
+  crosssection: 3.0
+  detuning: 0.0
+  linewidth: 0.5
+  magnification: 0.3333
+  wavelength: 680.24602
+camera:
+  ExposureAuto: false
+  ExposureCompensation: 0
+  ExposureCompensationAuto: false
+  ExposureMode: Timed
+  ExposureTime: 46.0
+  Gain: 0.0
+  GainAuto: false
+  SharpnessAuto: false
+  TriggerActivation: RisingEdge
+  TriggerDelay: 0.0
+  TriggerDelayEnable: false
+  TriggerMode: true
+  TriggerSelector: FrameStart
+  TriggerSource: Line1
+camera_info:
+  AcquisitionMode: MultiFrame
+  DeviceModelName: null
+  ExposureMode: Timed
+  Height: 964
+  PixelFormat: Mono8
+  RealPixelSize: null
+  TriggerMode: 'Off'
+  TriggerSelector: FrameStart
+  TriggerSource: Line0
+  Width: 1288
+cooling:
+  cooling_current: 2300
+  cooling_detuninglist:
+  - 0.0
+  - 0.0
+  - 0.0
+  cooling_power: 150
+  cooling_sequence: 3
+  cooling_time: 1500
+  cooling_timelist:
+  - 100.0
+  - 100.0
+  - 100.0
+experiment:
+  ExposureAuto: Continuous
+  ExposureCompensation: null
+  ExposureCompensationAuto: null
+  ExposureMode: Timed
+  ExposureTime: 79.4529914855957
+  Gain: 0.0
+  GainAuto: Continuous
+  SharpnessAuto: Continuous
+  TriggerActivation: FallingEdge
+  TriggerDelay: 0.0
+  TriggerDelayEnable: null
+  TriggerMode: 'Off'
+  TriggerSelector: FrameStart
+  TriggerSource: Line0
+  fileformat: bmp
+  filename: f2_ai
+  folder: /data/
+  image_num: 10
+  tag: background
+  wait_time: 0.0
+fit:
+  center:
+  - 300.0
+  - 400.0
+  fit: true
+  fit_2D: true
+  fit_optical_density: true
+  fix_center: false
+  fix_theta: false
+  fix_z0: false
+  roi:
+  - 300
+  - 300
+  - 900
+  - 700
+  roi_enabled: false
+  three_roi_enabled: false
+  threeroi:
+  - 300
+  - 300
+  - 900
+  - 700
+  - 400
+  - 400
+  - 900
+  - 700
+  - 0
+  - 0
+  - 200
+  - 200
+  tof:
+  - 3.0
+  - 4.0
+  - 5.0
+  - 6.0
+  - 7.0
+plot:
+  colormap: viridis
+program:
+  author: Yifan
+  date: '2018-01-01'
+  name: Rb Absorption Imaging
+  note: None
+  project: f1 state preparation
+repump:
+  repump_detuning: 0.0
+  repump_falltime: 100
+  repump_off_time: 200
+  repump_power: 9.0
+  repump_risetime: 1.0
+  repump_time: 1500
+  repump_type: normal
+unit:
+  ExposureDelay: us
+  ExposureTime: us
+  Gain: dB
+  Height: px
+  RealPixelSize: um
+  TriggerDelay: us
+  Width: px
+  coil_current: A
+  cooling_current: mA
+  cooling_detuninglist: MHz
+  cooling_power: mW
+  cooling_time: us
+  cooling_timelist: us
+  detuning: MHz
+  dispenser_current: A
+  linewidth: MHz
+  mass: kg
+  repump_detuning: MHz
+  repump_falltime: us
+  repump_off_time: us
+  repump_power: mW
+  repump_risetime: us
+  repump_time: us
+  roi: px
+  threeroi: px
+  tof: us
+  wait_time: s
+  wavelength: nm
