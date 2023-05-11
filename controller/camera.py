@@ -112,7 +112,7 @@ class CameraController:
                         os.makedirs(folder)
 
                     timestr = time.strftime("%Y%m%d_%H%M%S")
-                    image_filename = os.path.join(folder, timestr + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
+                    image_filename = os.path.join(folder, timestr + '_' + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
                     
                     
                     image_converted.Save(image_filename)

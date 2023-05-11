@@ -1,4 +1,3 @@
-watch_directory: /data/raw/
 atoms:
   atom: Rb87
   coil_current: 0.0
@@ -76,10 +75,10 @@ fit:
   - 400.0
   fit: true
   fit_2D: true
-  fit_optical_density: true
+  fit_optical_density: 'True'
   fix_center: false
-  fix_theta: false
-  fix_z0: false
+  fix_theta: 'False'
+  fix_z0: 'False'
   roi:
   - 300
   - 300
@@ -107,7 +106,7 @@ fit:
   - 6.0
   - 7.0
 plot:
-  colormap: viridis
+  colormap: jet
 program:
   author: Yifan
   date: '2018-01-01'
@@ -151,3 +150,4 @@ unit:
   tof: us
   wait_time: s
   wavelength: nm
+watch_directory: /home/gingerbread/Documents/code/mot_imaging/data

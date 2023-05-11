@@ -15,7 +15,7 @@ class Settings(ttk.Frame):
         self.colormap = tk.StringVar(
             frame, name="colormap", value=config.get("plot", "colormap")
         )
-        color_options = ("cividis", "viridis", "Professor Mode")
+        color_options = ("jet", "cividis", "viridis", "Professor Mode")
         ttk.Label(frame, text="Colormap").grid(row=0, column=0)
         ttk.OptionMenu(
             frame,

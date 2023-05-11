@@ -39,6 +39,13 @@ class Configuration(dict):
         with open(self.config_file, "r") as f:
             self.clear()
             self.update(yaml.safe_load(f) or {})
+     
+    def set(self, section, key, value):
+        """Set a configuration value."""
+        if section not in self.keys():
+            self[section] = {}
+        self[section][key] = value  
+        self.save()
 
     @property
     def camera_name(self):
@@ -111,10 +118,10 @@ class Configuration(dict):
     @property
     def detuning(self):
         var = self["beam"]["detuning"]
-        if var:
+        if var is not None:
             return float(var) * 2 * np.pi
         else:
-            return None
+            return 0.0
     
     @property
     def linewidth(self):

@@ -28,8 +28,8 @@ class MainController:
 
         self.log_controller= LogController(self.view.log, log_queue=self.log_queue)
         self.shot_controller = ShotController(
-            self,
-            self.worker,
+            main_controller = self,
+            worker=self.worker,
             plot_view=self.view.plot,
             fit_view=self.view.tab.shot_fit,
             list_view=self.view.shot_info_table,
