@@ -6,8 +6,8 @@ atoms:
 beam:
   crosssection: 3.0
   detuning: 0.0
-  linewidth: 0.5
-  magnification: 0.3333
+  linewidth: 6.6
+  magnification: 1.0
   wavelength: 680.24602
 camera:
   ExposureAuto: Continuous
@@ -75,15 +75,15 @@ fit:
   - 400.0
   fit: true
   fit_2D: true
-  fit_optical_density: 'True'
+  fit_optical_density: false
   fix_center: false
-  fix_theta: 'False'
-  fix_z0: 'False'
+  fix_theta: false
+  fix_z0: false
   roi:
+  - 400
   - 300
-  - 300
-  - 900
-  - 700
+  - 1100
+  - 800
   roi_enabled: false
   three_roi_enabled: false
   threeroi:
@@ -150,4 +150,4 @@ unit:
   tof: us
   wait_time: s
   wavelength: nm
-watch_directory: /home/gingerbread/Documents/code/mot_imaging/data
+watch_directory: /home/gingerbread/Documents/code/mot_imaging

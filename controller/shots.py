@@ -83,7 +83,7 @@ class ShotController:
             lf.attrs["comments"] = cmnts
 
         # Check if ToF or optimization
-        self.main_controller.sequence_presenter.add_shot(shot)
+        self.main_controller.sequence_controller.add_shot(shot)
 
     def _update_recent_shots(self, shot):
         """Update the new shot in the recent shots list."""

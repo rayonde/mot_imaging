@@ -10,9 +10,10 @@ class Configuration(dict):
         super().__init__()  # initialize as a dictionary
         self.config_file = Path(config_file)
         self.reload_config()
-
-        self.fit = True
-        self.fit_2D = True
+        
+        # Set default values for fitting 
+        self.fit = False
+        self.fit_2D = False
         self.roi_enabled = False
         self.three_roi_enabled = False
         self.fix_center = False
@@ -232,22 +233,21 @@ class Configuration(dict):
     def center(self, tup):
         self["fit"]["center"] = list(tup)
     
-    # TODO: check if this is used anywhere
-    # @property
-    # def logdict(self):
-    #     """Returns dictionary of all relevant config parameters"""
-    #     return {"fittedshot" : self.fit,
-    #             "fittedshot2D" : self.fit_2D,
-    #             "roi_enabled" : self.roi_enabled,
-    #             "three_roi_enabled" : self.three_roi_enabled,
-    #             "magnification(x)" : self.magnification,
-    #             "pixel_size(mm)" : self.pixel_size,
-    #             "wavelength(nm)" : self.wavelength,
-    #             "detuning(MHz)" : self.detuning,
-    #             "linewidth(MHz)" : self.linewidth,
-    #             "repump_time(ms)" : self.repump_time,
-    #             "atom_mass(kg)" : self.atom_mass
-    #         }
+    @property
+    def logdict(self):
+        """Returns dictionary of all relevant config parameters"""
+        return {"fittedshot" : self.fit,
+                "fittedshot2D" : self.fit_2D,
+                "roi_enabled" : self.roi_enabled,
+                "three_roi_enabled" : self.three_roi_enabled,
+                "magnification(x)" : self.magnification,
+                "pixel_size(mm)" : self.pixel_size,
+                "wavelength(nm)" : self.wavelength,
+                "detuning(MHz)" : self.detuning,
+                "linewidth(MHz)" : self.linewidth,
+                "repump_time(ms)" : self.repump_time,
+                "atom_mass(kg)" : self.atom_mass
+            }
 
     def get_config_file(self):
         return os.path(self.config_file)

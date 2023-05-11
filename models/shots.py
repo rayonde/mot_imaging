@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 
 from boltons.cacheutils import cachedproperty
 from scipy.stats.distributions import chi2
@@ -27,10 +28,15 @@ class Shot:
 
     def __init__(self, name, bmp_paths):
         logging.info("Reading image data into arrays")
-        bmps = map(imageio.imread, bmp_paths)
-        bmps = map(lambda x: x.astype("int16"), bmps)  # prevent underflow
+        bmps = []
+        for path in bmp_paths:
+            bmp = imageio.imread(path, mode="L")
+            bmp = bmp.astype("int16")  # prevent underflow
+            bmps.append(bmp)
 
-        (self.data, self.beam, self.dark) = bmps
+        self.data = bmps[0]
+        self.beam = bmps[1]
+        self.dark = bmps[2]
         self.shape = self.data.shape
         self.name = name
 
@@ -137,12 +143,16 @@ class Shot:
     def clear_fit(self):
         self.fit_2D = None
         self.fit_1D = None
+    @property
+    def atom_density(self):
+        pass
 
     @property
     def atom_number(self):
         """Calculates the total atom number from the transmission ROI values."""
         # light and camera parameters
         sigma_0 = (3 / (2 * np.pi)) * np.square(config.wavelength)  # cross-section
+        
         sigma = sigma_0 * np.reciprocal(
             1 + np.square(config.detuning / (config.linewidth / 2))
         )  # off resonance
@@ -214,8 +224,8 @@ class Shot:
         gs = gridspec.GridSpec(2, 2, width_ratios=ratio, height_ratios=ratio)
 
         image = fig.add_subplot(gs[1, 1])
-        image.imshow(img, cmap=config.colormap, norm=color_norm)
-
+        im = image.imshow(img, cmap=config.colormap, norm=color_norm)
+        fig.colorbar(im, ax=image, fraction=0.046, pad=0.04)
         if config.roi_enabled and config.roi:
             x0, y0, x1, y1 = config.roi
             roi = patches.Rectangle(
