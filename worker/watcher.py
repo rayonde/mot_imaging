@@ -21,13 +21,14 @@ class FileWatcher(Observer):
         # process_shot pass function to process the shots 
         # before moving the images to the Raw Data folder
         self.process_shot = process_shot
+        self.directory = directory  
 
         self.event_handler = _create_handler(self._check_and_dispatch)
         self.schedule(self.event_handler, directory, recursive=False)
 
     def start(self):
         super().start()
-        logging.info("Watching for new files...")
+        logging.info("Watching for new files in %s", self.directory)
 
     def _check_and_dispatch(self, bmp_paths):
         shot_bmps = defaultdict(int)

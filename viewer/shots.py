@@ -103,7 +103,7 @@ class ShotFit(ttk.Frame):
 
         # Fit Parameters (uneditable)
         params_frame = ttk.Frame(self)
-        params_frame.pack(side="left", expand=True, pady=15)
+        params_frame.pack(side="left", expand=True, padx=15, pady=15)
         keys = ["N", "A", "x0", "y0", "sx", "sy", "theta", "z0"]
         labels = ["N", "A", "x_0", "y_0", "σ_x", "σ_y", "θ", "z_0"]
         for l_idx, lbl in enumerate(labels):
@@ -113,9 +113,10 @@ class ShotFit(ttk.Frame):
             entry = ttk.Entry(params_frame, state="readonly")
             entry.grid(row=f_idx, column=1)
             self.fit_params[keys[f_idx]] = entry
+        
 
         options_frame = ttk.Frame(self)
-        options_frame.pack(side="left", expand=True, pady=15)
+        options_frame.pack(side="right",fill="both", expand=True,padx=5, pady=5)
 
         roi_control = RegionOfInterestControl(options_frame)
         roi_control.pack(fill="x", expand=True)
@@ -129,7 +130,7 @@ class ShotFit(ttk.Frame):
         rerun_fit_btn = ttk.Button(
             options_frame, text="Rerun Fit", command=self._rerun_fit
         )
-        rerun_fit_btn.pack(fill="x", expand=True, padx=10, pady=5)
+        rerun_fit_btn.pack(fill="x", expand=True, padx=5, pady=5)
 
     @property
     def keys(self):
@@ -172,7 +173,7 @@ class RegionOfInterestControl(ttk.LabelFrame):
         for row in range(1, 2 + 1):
             for col in range(1, 2 + 1):
                 var = tk.IntVar(None)
-                entry = FloatEntry(self, width=4, textvariable=var)
+                entry = FloatEntry(self, width=8, textvariable=var)
                 entry.var = var
                 entry.bind("<Return>", self._update_roi)
                 entry.grid(row=row, column=col)
@@ -182,7 +183,7 @@ class RegionOfInterestControl(ttk.LabelFrame):
                     var.set(config.roi[(row - 1) * 2 + (col - 1)])
 
         self.toggle_roi = ttk.Button(self, text="Enable", command=self._toggle_roi)
-        self.toggle_roi.grid(row=3, column=1, columnspan=2)
+        self.toggle_roi.grid(row=3, column=1, columnspan=2, padx=5, pady=5)
 
     def _update_roi(self, event=None):
         try:
@@ -359,11 +360,11 @@ class CenterControl(ttk.LabelFrame):
         fixcenter_btn.grid(row=0, column=0)
 
         center_x_var = tk.DoubleVar()
-        self.center_x = FloatEntry(self, width=5, textvariable=center_x_var)
+        self.center_x = FloatEntry(self, width=8, textvariable=center_x_var)
         self.center_x.var = center_x_var
 
         center_y_var = tk.DoubleVar()
-        self.center_y = FloatEntry(self, width=5, textvariable=center_y_var)
+        self.center_y = FloatEntry(self, width=8, textvariable=center_y_var)
         self.center_y.var = center_y_var
 
         if config.center:
@@ -380,7 +381,7 @@ class CenterControl(ttk.LabelFrame):
         self.current_shot_center = ttk.Button(
             self, text="Current Shot", command=self._fill_current_shot_center
         )
-        self.current_shot_center.grid(row=1, column=1, columnspan=2)
+        self.current_shot_center.grid(row=1, column=1, columnspan=2, padx=5, pady=5)
 
     def _update_center(self, event=None):
         x, y = self.center_x.var.get(), self.center_y.var.get()
@@ -457,7 +458,7 @@ class FitControl(ttk.LabelFrame):
             *fit_against_options,
             command=self._set_fit_against,
         )
-        fa_menu.configure(width=11)
+        fa_menu.configure(width=15)
         fa_menu.grid(row=2, column=1)
 
     def _get_fit_against(self):

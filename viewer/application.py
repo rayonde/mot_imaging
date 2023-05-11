@@ -1,6 +1,8 @@
 import tkinter as tk
 import tkinter.font as font
 from tkinter import ttk
+import tkinter.filedialog as fd 
+import os 
 
 from config import config 
 from .logs import LogTextBox
@@ -38,10 +40,11 @@ class Tab(ttk.Notebook):
 
 class MainWindow(ttk.Frame):
     """Main window of the application."""
-    def __init__(self,  controller=None,  **kwargs):
+    def __init__(self,  controller=None, app=None, **kwargs):
         
         self.master = tk.Tk()
         self.controller = controller
+        self.app = app 
         
         try:
             self.master.title(config.name)
@@ -55,15 +58,10 @@ class MainWindow(ttk.Frame):
         # Create a menu bar
         self.menu_bar = tk.Menu(self.master)
         self.path_menu = tk.Menu(self.menu_bar, tearoff=0)
-        self.menu_bar.add_cascade(label="Image Path", menu=self.path_menu)
-        # click on the menu item to open a dialog box to select the path
-        self.path_menu.add_command(label="Settings", command=self.path_menu.invoke)
-
-
-        self.save_menu = tk.Menu(self.menu_bar, tearoff=0)
-        self.menu_bar.add_cascade(label="Save Path", menu=self.save_menu)
-        self.save_menu.add_command(label="Settings", command=self.save_menu.invoke)
+        self.path_menu.add_command(label="Change Path", command=self.open_directory)
+        self.menu_bar.add_cascade(label="Watch Path", menu=self.path_menu)
         
+
         self.master.config(menu=self.menu_bar)
         
         default_font = font.nametofont("TkTextFont")
@@ -101,4 +99,16 @@ class MainWindow(ttk.Frame):
         log_frame = ttk.Labelframe(info_frame, text="Logs", relief=tk.SUNKEN)
         log_frame.pack(fill=tk.BOTH, expand=True)
         self.log = LogTextBox(log_frame)
+
+    def open_directory(self):
+        """Open directory dialog and update watch directory"""
+        folder_path = fd.askdirectory()
+        if folder_path:
+            # On Windows, replace backslashes with forward slashes
+            if "\\" in folder_path:
+                folder_path = folder_path.replace("\\", "/")
+            config["watch_directory"] = folder_path
+            config.save()
+
+            self.app.update_watch_directory(folder_path)
 

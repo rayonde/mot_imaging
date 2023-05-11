@@ -52,54 +52,66 @@ class ExperimentTab(ttk.Frame):
         label_frame.pack(side="top", fill="both", expand=True, padx=5, pady=5)
         
         self._display_items(label_frame, section_name)
-       
+
     def _display_items(self, frame, section_name):
         """Display a section of the config file by enumerating"""
         row_idx = 0
         for key in config[section_name].keys():
             text = key.replace("_", " ").capitalize()
             ttk.Label(frame, text=text).grid(row=row_idx, column=0)
-            
-            unit = config[self.unit_section].get(key) 
+
+            unit = config[self.unit_section].get(key)
             var = config[section_name].get(key)
             has_unit = True if unit else False
-            
+
             if isinstance(var, float):
                 entry = FloatEntry(frame)
                 entry.grid(row=row_idx, column=1)
                 entry.insert(0, var)
-                entry.bind('<<Modified>>', lambda event: self.exp_params[f"{section_name}.{key}"].set(float(entry.get())))
+                entry.bind('<Return>', self._create_modified_handler(entry, section_name, key, float))
             elif isinstance(var, int):
                 entry = ttk.Entry(frame)
                 entry.grid(row=row_idx, column=1)
                 entry.insert(0, var)
-                entry.bind('<<Modified>>', lambda event: self.exp_params[f"{section_name}.{key}"].set(int(entry.get())))
+                entry.bind('<Return>', self._create_modified_handler(entry, section_name, key, int))
             elif isinstance(var, list):
                 entry = ttk.Entry(frame)
                 entry.grid(row=row_idx, column=1)
                 entry.insert(0, self.tostring(var))
-                entry.bind('<<Modified>>', lambda event: self.exp_params[f"{section_name}.{key}"].set(self.tolist(entry.get())))
+                entry.bind('<Return>', self._create_modified_handler(entry, section_name, key, self.tolist))
             else:
                 entry = ttk.Entry(frame)
                 entry.grid(row=row_idx, column=1)
                 entry.insert(0, var)
-                entry.bind('<<Modified>>', lambda event: self.exp_params[f"{section_name}.{key}"].set(entry.get()))
-                self.exp_params[f"{section_name}.{key}"] = entry.get()
+                entry.bind('<Return>', self._create_modified_handler(entry, section_name, key, str))
             if has_unit:
                 ttk.Label(frame, text=unit).grid(row=row_idx, column=2)
             row_idx += 1
+
+
+    def _create_modified_handler(self, entry, section_name, key, value_type):
+        """Create a modified event handler for the entry widget"""
+        def handler(event):
+            value = entry.get()
+            if value:
+                try:
+                    converted_value = value_type(value.strip())
+                    self.exp_params.setdefault(section_name, {})[key] = converted_value
+                except ValueError:
+                    logging.warning(value_type)
+                    logging.warning(f" {value.strip()} cannot to be converted")
+            else:
+                    self.exp_params.setdefault(section_name, {})[key] = None
+        return handler
+
         
     def _save_config(self):
-
-        for name, item in self.exp_params.items():
-            section, key = name.split(".")
-            if item:
-                config[section][key] = item
-        
-        print(self.exp_params["cooling.cooling_frequency"])
-        print(config["cooling"]["cooling_current"])
+        print(self.exp_params)
+        for section in self.exp_params.keys():
+            if isinstance(self.exp_params[section], dict):
+                for key in self.exp_params[section].keys():
+                    config[section][key] = self.exp_params[section][key]
         config.save()
-        
         logging.info("Saved experiment config to config.yaml")
     
     def tostring(self, float_list):
