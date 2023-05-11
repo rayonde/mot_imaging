@@ -58,27 +58,27 @@ class MainController:
         """Add object to event queue (only way to communicate between threads)."""
         return self.event_queue.put((func, args, kwargs))
 
-    def _poll_event_queue(self):
-        """The plot queue is polled every 100ms for updates."""
-        if not self.event_queue.empty():
-            obj = self.event_queue.get(block=False)
-            if isinstance(obj, tuple):
-                func, *args = obj
-                func(*args)
-        self.view.after(100, self._poll_event_queue)
-
     # def _poll_event_queue(self):
     #     """The plot queue is polled every 100ms for updates."""
     #     if not self.event_queue.empty():
     #         obj = self.event_queue.get(block=False)
     #         if isinstance(obj, tuple):
-    #             if len(obj) == 1:
-    #                 obj[0]()
-    #             elif len(obj) == 2:
-    #                 if isinstance(obj[1], list):
-    #                     obj[0](*obj[1])
-    #                 elif isinstance(obj[1], dict):
-    #                     obj[0](**obj[1])
-    #             elif len(obj) == 3:
-    #                 obj[0](*obj[1], **obj[2])
+    #             func, *args = obj
+    #             func(*args)
     #     self.view.after(100, self._poll_event_queue)
+
+    def _poll_event_queue(self):
+        """The plot queue is polled every 100ms for updates."""
+        if not self.event_queue.empty():
+            obj = self.event_queue.get(block=False)
+            if isinstance(obj, tuple):
+                if len(obj) == 1:
+                    obj[0]()
+                elif len(obj) == 2:
+                    if isinstance(obj[1], list):
+                        obj[0](*obj[1])
+                    elif isinstance(obj[1], dict):
+                        obj[0](**obj[1])
+                elif len(obj) == 3:
+                    obj[0](*obj[1], **obj[2])
+        self.view.after(100, self._poll_event_queue)
