@@ -82,6 +82,8 @@ class ShotController:
 
             lf.attrs["comments"] = cmnts
 
+            logging.info("Logging file updated for shot %s" % name)
+
         # Check if ToF or optimization
         self.main_controller.sequence_controller.add_shot(shot)
 
