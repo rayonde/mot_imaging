@@ -143,10 +143,21 @@ class Shot:
     def clear_fit(self):
         self.fit_2D = None
         self.fit_1D = None
+        
     @property
     def atom_density(self):
         pass
+    
+    ########################################################
+    # Linear poliarized light saturation intensity for D2 line of Rb87
+    # I_sat = 2.503e-3 # W/cm^2
 
+    # Circular polarized light stauration itensity  begins at 3.58mW/cm^2
+    # and equilibrate at 1.67mW/cm^2
+    # I_sat = 1.669e-3 # W/cm^2
+    # I_sat = 1.669e-3 * 1e4 # W/m^2
+   
+    # In this script, optical density is equal to the optical depth 
     @property
     def atom_number(self):
         """Calculates the total atom number from the transmission ROI values."""
@@ -169,6 +180,17 @@ class Shot:
                 scale = 0.866
 
         return (area / sigma) * np.sum(density) / scale  # Divide by 1.5-sigma area
+    
+    @property
+    def saturated_od(self):
+        n = self.atom_number
+        wavelength = config.wavelength
+        sigma_0 = (3 / (2 * np.pi)) * np.square(wavelength)  # cross-section
+        sigma = sigma_0 * np.reciprocal(
+            1 + np.square(config.detuning / (config.linewidth / 2))
+        )  # off resonance
+
+        saturated_od = np.log(1 + (n * sigma) / (config.physical_scale * 1e-3) ** 2)
 
     @property
     def three_roi_atom_number(self):
