@@ -112,10 +112,10 @@ class CameraTab(ttk.Frame):
         image_num_entry.grid(row=0, column=1, padx=5, pady=5)
         image_num_entry.bind("<Return>", lambda event: self._update_exp_config("image_num", int(image_num_entry.get())))
 
-        # Tag to represent the image type: background, beam, mot
+        # Tag to represent the image type: 1, 2, 3
         tag_default = tk.StringVar(value=self.exp_config["tag"])
         tk.Label(self.camera_frame, text="Tag:").grid(row=1, column=0, padx=5, pady=5)
-        tag_options = ["background", "beam", "mot"]
+        tag_options = ["1", "2", "3"]
         tag_selection = tk.OptionMenu(self.camera_frame, tag_default, *tag_options)
         tag_selection.grid(row=1, column=1, padx=5, pady=5, sticky="snew")
         tag_default.trace_add("write", lambda *args, var=tag_default: self._update_exp_config("tag", var.get()))

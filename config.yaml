@@ -148,4 +148,4 @@ unit:
   tof: us
   wait_time: s
   wavelength: nm
-watch_directory: /home/swm/programs/mot_imaging/mot_imaging
+watch_directory: /home/gingerbread/Documents/yifan/code/mot_imaging/Raw Data
