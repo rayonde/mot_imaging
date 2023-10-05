@@ -17,7 +17,6 @@ camera:
   ExposureTime: 45.59755325317383
   Gain: 0.0
   GainAuto: 'Off'
-  SharpnessAuto: Continuous
   TriggerActivation: RisingEdge
   TriggerDelay: 12.159347534179688
   TriggerDelayEnable: false
@@ -56,7 +55,6 @@ experiment:
   ExposureTime: 999.0
   Gain: 0.0
   GainAuto: Continuous
-  SharpnessAuto: null
   TriggerActivation: null
   TriggerDelay: 208.0
   TriggerDelayEnable: null

@@ -4,6 +4,9 @@ from config import config
 from .helper import FloatEntry
 import logging
 
+camera_config_map = {"ExposureTime": "exposure_time", 
+                     "TriggerDelay": "trigger_delay", 
+                     "TriggerSource": "trigger_source"}
 
 class CameraTab(ttk.Frame):
     """Tab for viewing and reconfiguring some experimental parameters"""
@@ -38,19 +41,18 @@ class CameraTab(ttk.Frame):
         """Update the camera information from the controller."""
         if self.camera_controller.isavailable:
             for name in self.camera_info.keys():
-
-                if name in self.camera_controller.device_config.keys():
-                    self.camera_info[name] = self.camera_controller.device_config[name]  
-                else: 
-                    result = self.camera_controller.get_config(name)
-                    if result:
-                        self.camera_info[name] = result
+                
+                result = self.camera_controller.retrieve_config(name)
+                if result:
+                    self.camera_info[name] = result
+        else:
+            logging.warning("Camera not available. Cannot update the camera information.")
                 
     def _update_setting(self):
         """Update the camera setting from the controller."""
         if self.camera_controller.isavailable:
             for name in self.camera_config.keys():
-                result = self.camera_controller.get_config(name)
+                result = self.camera_controller.retrieve_config(name)
                 if result:
                     self.camera_config[name] = result
 
@@ -78,6 +80,17 @@ class CameraTab(ttk.Frame):
         # Update the experimental parameters
         self.camera_config[name] = value
         logging.info("Update the camera parameters: {} = {}".format(name, value))
+        self._update_camera_controller(name, value)
+        
+    def _update_camera_controller(self, name, value):
+        if name in camera_config_map.keys():
+            name_in_controller = camera_config_map[name]
+
+        if name_in_controller in vars(self.camera_controller).keys():
+            setattr(self.camera_controller, name_in_controller, value)
+            logging.info("Update the camera controller: {} = {}".format(name, value))
+        else:
+            logging.warning("Cannot update the camera controller: {} = {}".format(name, value))
 
     def _save_config(self):
         if self.camera_controller.isavailable:
@@ -179,12 +192,6 @@ class CameraTab(ttk.Frame):
         self.save = ttk.Button(frame, text="Save Config", command=lambda: self._save_config())
         self.save.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
  
-        # Reset the camera 
-        self.reset_button = ttk.Button(
-            frame,
-            text="Reset Camera",
-            command=lambda: self.camera_controller.reset_camera())
-        self.reset_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
     
     def _camera_control_button_right(self, frame):
         # Start the acquisition
@@ -201,12 +208,9 @@ class CameraTab(ttk.Frame):
     def _config_trigger(self):
         """Combo box for config trigger"""
         # Config the trigger setting button
-        exposure_time = self.camera_config["ExposureTime"] 
-        trigger_source = self.camera_config["TriggerSource"]
-        trigger_delay = self.camera_config["TriggerDelay"] 
-        
-        self.camera_controller.config_trigger(exposure_time, trigger_source, trigger_delay)
-        
+        for name in self.camera_config.keys():
+            self._update_camera_controller(name, self.camera_config[name])
+
         self._update_info()
         self._update_setting()
         self.info_frame.destroy()

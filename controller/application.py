@@ -20,7 +20,6 @@ class MainController:
         self.log_controller = None
         self.shot_controller = None
         self.sequence_controller = None
-        self.camera_controller = None
         self.camera_controller = CameraController()
 
     def set_view(self, view):

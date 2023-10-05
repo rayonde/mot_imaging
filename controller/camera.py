@@ -21,24 +21,45 @@ class CameraController:
         retrieve the camera info and settings, and then release the camera.
         """
         self.exposure_time = 50
-        self.trigger = 'Line0'
+        self.trigger_source = 'Line0'
         self.trigger_delay = 0.0
         self.pixel_format = 'Mono8'
         self.file_format = 'bmp'
         self.filename = 'test'
         self.folder = 'data'
         self.tag = '1'
+        self.device_config = {}
+        self.camera_config = {}
+        self.isavailable = False
 
         cam, cam_list, system = self.find_camera()
-        self.device_info(cam)
+        if cam is not None:
+            self.device_info(cam)
+            nodemap, tldevice_nodemap = self.nodemap(cam)
+            self.camera_config = self.get_all_config(nodemap)
+
         self.close(cam, cam_list, system)
-        
+
+    def update_camera_config(self, nodemap):
+        """Update camera config."""
+        for name in self.camera_config.keys():
+            self.camera_config[name] = self.get_config(nodemap, name)
+
+    def retrieve_config(self, name:str) -> Any:
+        if name in self.device_config.keys():
+            return self.device_config[name]
+        elif name in self.camera_config.keys():
+            return self.camera_config[name]
+        else:
+            logging.info('Config name %s is not available.' % name)
+            return None
+
     def find_camera(self):
         logging.info('============= find camera =============')
         system = ps.System.GetInstance()
-        cam_list = self.system.GetCameras()
-        version = self.system.GetLibraryVersion()
-        logging.info('Library version: %d.%d.%d.%d' % (self.version.major, self.version.minor, self.version.type, self.version.build))
+        cam_list = system.GetCameras()
+        version = system.GetLibraryVersion()
+        logging.info('Library version: %d.%d.%d.%d' % (version.major, version.minor,version.type, version.build))
         
         num_cameras = cam_list.GetSize()
         logging.info('Number of cameras detected: %i' % num_cameras)
@@ -51,6 +72,7 @@ class CameraController:
             return None, None, None
         else:
             cam = cam_list.GetByIndex(0)
+            self.isavailable = True
             logging.info('Camera is found.')
             return cam, cam_list, system
     
@@ -93,7 +115,9 @@ class CameraController:
                     node_feature = ps.CValuePtr(feature)
                     logging.info('%s: %s' % (node_feature.GetName(),
                                             node_feature.ToString() if ps.IsReadable(feature) else 'Node not readable'))
-            
+                    
+                    if ps.IsReadable(feature):
+                        self.device_config[node_feature.GetName()] = node_feature.ToString()
             else:
                 logging.info('Device control information not available.')
                 return False
@@ -219,7 +243,18 @@ class CameraController:
             else:
                 logging.info('Type of node is not supported temporarily.')
                 return None
+
+    def get_all_config(self, nodemap) -> dict:
+        """Get all config nodes."""
+        if nodemap is None:
+            logging.info('Camera is not available to get configurations.')
+            return None
         
+        config = {}
+        for nodename in nodemap.GetNodeNames():
+            config[nodename] = self.get_config(nodemap, nodename)
+        return config
+     
     def config_trigger(self, 
                        nodemap, 
                        exposure_time:float=None, 
@@ -231,7 +266,7 @@ class CameraController:
         if exposure_time is not None:
             self.exposure_time = exposure_time
         if trigger is not None:
-            self.trigger = trigger
+            self.trigger_source = trigger
         if trigger_delay is not None:
             self.trigger_delay = trigger_delay
         
@@ -239,13 +274,13 @@ class CameraController:
         try: 
             self.set_config(nodemap, 'TriggerMode', 'Off')
             self.set_config(nodemap, 'GainAuto', 'Off')
-            self.set_config(nodemap, 'TriggerSource', trigger)
+            self.set_config(nodemap, 'TriggerSource', self.trigger_source)
             self.set_config(nodemap, 'TriggerSelector', 'ExposureStart')
             self.set_config(nodemap, 'TriggerActivation', 'RisingEdge')
-            self.set_config(nodemap, 'TriggerDelay', trigger_delay)
+            self.set_config(nodemap, 'TriggerDelay', self.trigger_delay)
             self.set_config(nodemap, 'ExposureMode', 'Timed')
             self.set_config(nodemap, 'ExposureAuto', 'Off')
-            self.set_config(nodemap, 'ExposureTime', exposure_time)
+            self.set_config(nodemap, 'ExposureTime', self.exposure_time)
 
             self.set_config(nodemap, 'TriggerMode', 'On')
             self.set_config(nodemap, 'AcquisitionMode', 'Continuous')
@@ -284,7 +319,7 @@ class CameraController:
         except ps.SpinnakerException as ex:
             logging.info('Error: %s' % ex)
             return False
-
+    
     @thread
     def acquisition(self, 
                     num_images:int=10, 
@@ -319,13 +354,14 @@ class CameraController:
         
         self.config_trigger(nodemap)
         self.config_fomat(nodemap)
-        
+        self.update_camera_config(nodemap)
+
         logging.info('=========== camera acquisition starts ===========')
         cam.BeginAcquisition()
 
         device_serial_number = '' or self.get_config(tldevice_nodemap, 'DeviceSerialNumber')
         logging.info('Device serial number: %s' % device_serial_number)
-
+        
         # Create ImageProcessor instance for post processing images
         processor = ps.ImageProcessor()
         # By default, if no specific color processing algorithm is set, the image
