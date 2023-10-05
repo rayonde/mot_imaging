@@ -74,13 +74,9 @@ def _create_handler(callback):
 
     return event_handler
 
-def _move_raw_images(folder, paths, failed=False):
+def _move_raw_images(paths, failed=False):
     """Move original images to "Raw Data" folder by date"""
-    folder_path = Path(folder)
-    if not folder_path.is_dir():
-        folder_path = folder_path.parent + folder_path.stem
-    
-    destination = folder_path / "Raw Data"/ str(date.today())
+    destination = Path("../Raw Data/").joinpath(str(date.today()))
     if failed:
         destination = destination.joinpath("failed")
     
@@ -88,3 +84,4 @@ def _move_raw_images(folder, paths, failed=False):
 
     for path in paths:
         path.replace(destination.joinpath(path.name))
+
