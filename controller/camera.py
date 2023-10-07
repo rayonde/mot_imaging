@@ -37,7 +37,7 @@ class CameraController:
             self.device_info()
     
         
-    def find_camera(self):
+    def find_camera(self) -> bool:
         logging.info('============= find camera =============')
         self.system = ps.System.GetInstance()
         self.cam_list = self.system.GetCameras()
@@ -64,17 +64,27 @@ class CameraController:
                 self.nodemap_tldevice = self.cam.GetTLDeviceNodeMap()
                 logging.info('Camera is initiated.')
                 self.isavailable = True
+                return True
             else:
                 logging.info('Camera not found.')
+                return False
         else:
             logging.info('Camera is not connected')
+            return False
 
     def reset_camera(self):
         """Reset camera to default settings."""
         pass
 
     @thread
-    def acquisition(self, num_images=10, wait_time=0, pixelformat="Mono8", fileformat='bmp', filename='test', folder='data', tag='background'):
+    def acquisition(self, 
+                    num_images:int=10, 
+                    wait_time:float=0.0, 
+                    pixelformat:str="Mono8", 
+                    fileformat:str='bmp', 
+                    filename:str='test', 
+                    folder:str='data', 
+                    tag:str="'1"):
         """Acquire image."""
         
         # Create ImageProcessor instance for post processing images
@@ -84,7 +94,7 @@ class CameraController:
         processor.SetColorProcessing(ps.SPINNAKER_COLOR_PROCESSING_ALGORITHM_HQ_LINEAR)
         
         self.cam.BeginAcquisition()
-        logging.info('Camera acquisition starts.')
+        logging.info('============ Camera acquisition starts ===========')
        
         for i in range(num_images):
             try: 
@@ -106,7 +116,7 @@ class CameraController:
                     if not os.path.exists(folder):
                         os.makedirs(folder)
 
-                    timestr = time.strftime("%Y%m%d_%H%M%S")
+                    timestr = time.strftime("%Y%m%d")
                     image_filename = os.path.join(folder, timestr + '_' + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
                     
                     
@@ -120,13 +130,17 @@ class CameraController:
 
             except ps.SpinnakerException as ex:
                 logging.info('Error: %s' % ex)
-
+       
         self.cam.EndAcquisition()
         logging.info('Camera acquisition ends.')
+        print(self.cam)
     
     def close(self):
         if self.cam: 
-            self.cam.DeInit()
+            try:
+                self.cam.DeInit()
+            except ps.SpinnakerException as ex:
+                logging.info('Error: %s' % ex)
         del self.cam
         self.cam_list.Clear()
         self.iface_list.Clear()
@@ -135,7 +149,7 @@ class CameraController:
 
     def device_info(self):
         """Print device info."""
-        logging.info('============= device info update =============')
+        logging.info('=============== device info update ===============')
         node_device_information = ps.CCategoryPtr(self.nodemap_tldevice.GetNode('DeviceInformation'))
         if ps.IsAvailable(node_device_information) and ps.IsReadable(node_device_information):
             features = node_device_information.GetFeatures()
@@ -149,23 +163,36 @@ class CameraController:
         else:
             logging.info('Device control information not available.')
     
-    def config_trigger(self, exposure_time='min', trigger='Line0', trigger_delay=0.0):
+    def config_trigger(self, 
+                       exposure_time:float=0.0, 
+                       trigger:str='Line0', 
+                       trigger_delay:float=0.0) -> bool:
         """Configure trigger."""
-        logging.info('============= config trigger =============')
+        logging.info('================= config trigger =================')
         self.set_config('TriggerMode', 'Off')
+
         self.set_config('GainAuto', 'Off')
         self.set_config('GammaEnable', 'False')
         self.set_config('TriggerSource', trigger)
-        # self.set_config('TriggerSelector', 'ExposureStart')
         self.set_config('TriggerActivation', 'RisingEdge')
         self.set_config('TriggerDelay', trigger_delay)
-
         self.set_config('ExposureMode', 'Timed')
         self.set_config('ExposureAuto', 'Off')
         self.set_config('ExposureTime', exposure_time)
-        # self.set_config('ExposureAuto', 'Off')
-        # self.set_config('TriggerMode', 'On')
-        # self.set_config('AcquisitionMode', 'Continuous')
+        # For different camera, the trigger selector may be different
+        # For Firefly FFY-U3-16S2M, the trigger selector can be "FrameStart" or "AcquisitionStart
+        # self.set_config('TriggerSelector', 'ExposureStart')
+        
+
+        # After setting the trigger mode, there will be a error message as below:
+        # Error: Spinnaker: Failed waiting for EventData on NEW_BUFFER_DATA event. [-1011]
+        # Not sure if it is a problem because there is no physical trigger connected to the camera when
+        # the error message appears.
+        # The Acquisiton of images has a timeout of 1000 ms, which is set in the acquisition function.
+
+        self.set_config('TriggerMode', 'On')
+        self.set_config('AcquisitionMode', 'Continuous')
+        return True
     
     def config_fomat(self, pixel_format='Mono8'):
         """Configure image format."""
