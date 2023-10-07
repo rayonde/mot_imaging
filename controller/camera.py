@@ -20,14 +20,15 @@ class CameraController:
         # self.camera_view = camera_view
         self.system = None
         self.cam_list = None
-        self.version = None
         self.iface_list = None
-        self.num_interfaces = None
         self.cam_list = None
-        self.num_cams = 0
         self.cam = None
         self.nodemap = None
         self.nodemap_tldevice = None
+
+        self.num_interfaces = 0
+        self.version = None
+        self.num_cams = 0
         self.isavailable = False
         self.device_config={}
 
@@ -70,13 +71,7 @@ class CameraController:
 
     def reset_camera(self):
         """Reset camera to default settings."""
-        if self.cam is not None:
-            self.close()
-            
-        logging.info('Resetting camera to default settings...')
-        self.find_camera()
-        self.cam.UserSetSelector.SetValue(ps.UserSetSelector_Default)
-        self.cam.UserSetLoad()
+        pass
 
     @thread
     def acquisition(self, num_images=10, wait_time=0, pixelformat="Mono8", fileformat='bmp', filename='test', folder='data', tag='background'):
@@ -154,23 +149,23 @@ class CameraController:
         else:
             logging.info('Device control information not available.')
     
-    def config_trigger(self, exposure_time='min', trigger='Line3', trigger_delay=0.0):
+    def config_trigger(self, exposure_time='min', trigger='Line0', trigger_delay=0.0):
         """Configure trigger."""
         logging.info('============= config trigger =============')
         self.set_config('TriggerMode', 'Off')
         self.set_config('GainAuto', 'Off')
+        self.set_config('GammaEnable', 'False')
         self.set_config('TriggerSource', trigger)
-        self.set_config('TriggerSelector', 'FrameStart')
+        # self.set_config('TriggerSelector', 'ExposureStart')
         self.set_config('TriggerActivation', 'RisingEdge')
-
         self.set_config('TriggerDelay', trigger_delay)
 
         self.set_config('ExposureMode', 'Timed')
         self.set_config('ExposureAuto', 'Off')
         self.set_config('ExposureTime', exposure_time)
-        self.set_config('ExposureAuto', 'Off')
-        self.set_config('TriggerMode', 'On')
-        self.set_config('AcquisitionMode', 'Continuous')
+        # self.set_config('ExposureAuto', 'Off')
+        # self.set_config('TriggerMode', 'On')
+        # self.set_config('AcquisitionMode', 'Continuous')
     
     def config_fomat(self, pixel_format='Mono8'):
         """Configure image format."""

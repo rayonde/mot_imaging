@@ -14,27 +14,27 @@ camera:
   ExposureCompensation: 0
   ExposureCompensationAuto: false
   ExposureMode: Timed
-  ExposureTime: 45.59755325317383
+  ExposureTime: 10014.0
   Gain: 0.0
   GainAuto: 'Off'
   SharpnessAuto: Continuous
   TriggerActivation: RisingEdge
   TriggerDelay: 12.159347534179688
   TriggerDelayEnable: false
-  TriggerMode: 'On'
-  TriggerSelector: FrameStart
-  TriggerSource: Line0
+  TriggerMode: 'Off'
+  TriggerSelector: AcquisitionStart
+  TriggerSource: Software
 camera_info:
   AcquisitionMode: Continuous
-  DeviceModelName: Chameleon3 CM3-U3-13S2M
+  DeviceModelName: Firefly FFY-U3-16S2M
   ExposureMode: Timed
-  Height: 964
+  Height: 1080
   PixelFormat: Mono8
   RealPixelSize: 3.75
-  TriggerMode: 'On'
-  TriggerSelector: FrameStart
-  TriggerSource: Line0
-  Width: 1288
+  TriggerMode: 'Off'
+  TriggerSelector: AcquisitionStart
+  TriggerSource: Software
+  Width: 1440
 cooling:
   cooling_current: 200.0
   cooling_detuninglist:
