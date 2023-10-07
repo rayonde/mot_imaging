@@ -105,8 +105,20 @@ class CameraTab(ttk.Frame):
         tag_options = ["background", "beam", "mot"]
         tag_selection = tk.OptionMenu(self.camera_frame, tag_default, *tag_options)
         tag_selection.grid(row=1, column=1, padx=5, pady=5, sticky="snew")
-        tag_default.trace_add("write", lambda *args, var=tag_default: self._update_exp_config("tag", var.get()))
+        # According to the selection, update the config
+        # If background update config "tag" by "3", "beam" by "2", "mot" by "1"
+        def update_config(*args):
+            option = tag_default.get()
+            if option == "background":
+                value = "3"
+            elif option == "beam":
+                value = "2"
+            elif option == "mot":
+                value = "1"
+            self._update_exp_config("tag", value)
 
+        tag_default.trace_add("write", update_config)
+   
         # Exposure time
         exposuret_default = self.camera_config["ExposureTime"]
         exposuret_var = tk.DoubleVar(value=exposuret_default) 

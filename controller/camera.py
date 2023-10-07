@@ -73,9 +73,42 @@ class CameraController:
             return False
 
     def reset_camera(self):
-        """Reset camera to default settings."""
-        pass
+        """Reset camera to a normal state by turning off trigger mode"""
+        try:
+            result = True
+            self.set_config('TriggerMode', 'Off')
+        except ps.SpinnakerException as ex:
+            print('Error: %s' % ex)
+            result = False
+        
+def reset_trigger(nodemap):
+    """
+    This function returns the camera to a normal state by turning off trigger mode.
 
+    :param nodemap: Transport layer device nodemap.
+    :type nodemap: INodeMap
+    :returns: True if successful, False otherwise.
+    :rtype: bool
+    """
+    try:
+        result = True
+        node_trigger_mode = PySpin.CEnumerationPtr(nodemap.GetNode('TriggerMode'))
+        if not PySpin.IsReadable(node_trigger_mode) or not PySpin.IsWritable(node_trigger_mode):
+            print('Unable to disable trigger mode (node retrieval). Aborting...')
+            return False
+
+        node_trigger_mode_off = node_trigger_mode.GetEntryByName('Off')
+        if not PySpin.IsReadable(node_trigger_mode_off):
+            print('Unable to disable trigger mode (enum entry retrieval). Aborting...')
+            return False
+
+        node_trigger_mode.SetIntValue(node_trigger_mode_off.GetValue())
+
+        print('Trigger mode disabled...')
+
+    except PySpin.SpinnakerException as ex:
+        print('Error: %s' % ex)
+        result = False
     @thread
     def acquisition(self, 
                     num_images:int=10, 
@@ -194,72 +227,95 @@ class CameraController:
         self.set_config('AcquisitionMode', 'Continuous')
         return True
     
-    def config_fomat(self, pixel_format='Mono8'):
+    def config_fomat(self, pixel_format:str='Mono8'):
         """Configure image format."""
         self.set_config('PixelFormat', pixel_format)
       
     def set_config(self, nodename, value):
         """Set config node."""
+
         node_address = self.nodemap.GetNode(nodename)
    
         if ps.IsAvailable(node_address):
-
+      
             if ps.CEnumerationPtr(node_address).IsValid():
                 node = ps.CEnumerationPtr(node_address)
-                node_entry = ps.CEnumEntryPtr(node.GetEntryByName(value))
-                entry_value = node_entry.GetValue()
+                node_entry = node.GetEntryByName(value)
+                if not ps.IsReadable(node_entry):
+                    logging.info('Unable to set %s to %s' % (node.GetName(), value))
+                    return False
                 
-                node.SetIntValue(entry_value)
+                node.SetIntValue(node_entry.GetValue())
                 logging.info('%s set to %s' % (node.GetName(), value))
+                return True
             
             elif ps.CIntegerPtr(node_address).IsValid():
                 node = ps.CIntegerPtr(node_address)
-
-                if isinstance(value, str):
-                    if value == 'min':
-                        value = node.GetMin()
-                    elif value == 'max':
-                        value = node.GetMax()
-                    else:
-                        logging.info('Value %s is not valid.' % value)
-                else:
+                minvalue = node.GetMin()
+                maxvalue = node.GetMax()
+                
+                try: 
                     value = int(value)
-
-                if node.GetMin() <= value <= node.GetMax():
+                except ValueError:
+                    logging.info('Value %s is not valid.' % value)
+                    return False
+            
+                if minvalue <= value <= maxvalue:
                     node.SetValue(value)
                     logging.info(f'{node.GetName()} set to {value}')
-                else:
-                    logging.info('Value %s is out of range.' % value)
+                    return True
+                elif value < minvalue:
+                    node = node.SetValue(minvalue)
+                    logging.info(f'{node.GetName()} set to minimal value {minvalue}')
+                    return True
+                elif value > maxvalue:
+                    node = node.SetValue(maxvalue)
+                    logging.info(f'{node.GetName()} set to maximal value {maxvalue}')
+                    return True
             
             elif ps.CFloatPtr(node_address).IsValid():
                 node = ps.CFloatPtr(node_address)
+                minvalue = node.GetMin()
+                maxvalue = node.GetMax()
 
-                if isinstance(value, str):
-                    if value == 'min':
-                        value = node.GetMin()
-                    elif value == 'max':
-                        value = node.GetMax()
-                    else:
-                        logging.info('Value %s is not valid.' % value)
-                else:
-                    value = int(value)
-
-                if node.GetMin() <= value <= node.GetMax():
+                try:
+                    value = float(value)
+                except ValueError:
+                    logging.info('Value %s is not valid.' % value)
+                    return False
+                
+                if minvalue <= value <= maxvalue:
                     node.SetValue(value)
                     logging.info(f'{node.GetName()} set to {value}')
-                else:
-                    logging.info('Value %s is out of range.' % value)
+                    return True
+                elif value < minvalue:
+                    node.SetValue(minvalue)
+                    logging.info(f'{node.GetName()} set to minimal value {minvalue}')
+                    return True
+                elif value > maxvalue:
+                    node.SetValue(maxvalue)
+                    logging.info(f'{node.GetName()} set to maximal value {maxvalue}')
+                    return True
 
             elif ps.CBooleanPtr(node_address).IsValid():
                 node = ps.CBooleanPtr(node_address)
                 
-                value = bool(value)
+                try:
+                    value = bool(value)
+                except ValueError:
+                    logging.info('Value %s is not valid.' % value)
+                    return False
+                
                 node.SetValue(value)
                 logging.info('%s set to %s' % (node.GetName(), value))
+                return True
+                
             else:
                 logging.info('Type of node is not supported temporarily.')
+                return False
         else:
             logging.info('Node %s is not available' % nodename)
+            return False
         
     def get_config(self, nodename) -> None:
         """Get config node."""
@@ -310,14 +366,13 @@ class CameraController:
                     return node_feature
                 else:
                     logging.info('(Bool)Unable to get %s' % node.GetName())
+            
+            # other node 
+            else:
+                logging.info('Type of node is not supported temporarily.')
+                return None
 
-            elif ps.CCommandPtr(node_address).IsValid():
-                logging.info('Command node is not supported temporarily.')
-            elif ps.CStringPtr(node_address).IsValid():
-                logging.info('String node is not supported temporarily.')
-            elif ps.CRegisterPtr(node_address).IsValid():
-                logging.info('Register node is not supported temporarily.')
-            elif ps.CCategoryPtr(node_address).IsValid():
-                logging.info('Category node is not supported temporarily.') 
+            
         else: 
             logging.info('%s node address is not available' % nodename)
+            return None
