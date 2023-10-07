@@ -6,6 +6,11 @@ import logging
 from platform import node 
 import os 
 import threading
+config_name_set = ("ExposureAuto", "ExposureCompensation", "ExposureCompensationAuto",
+                   "ExposureMode","ExposureTime", "Gain","GainAuto","TriggerActivation",
+                   "TriggerDelay", "TriggerDelayEnable","TriggerMode","TriggerSelector",
+                   "TriggerSource","SharpneeAuto","AcquisitionMode" ,"PixelFormat",
+                   "Width","Height","OffsetX","OffsetY","BlackLevel","BlackLevelAuto")
 
 def thread(func):
     def wrapper(*args, **kwargs):
@@ -33,11 +38,12 @@ class CameraController:
         self.isavailable = False
 
         cam, cam_list, system = self.find_camera()
+        cam.Init()
         if cam is not None:
             self.device_info(cam)
             nodemap, tldevice_nodemap = self.nodemap(cam)
             self.camera_config = self.get_all_config(nodemap)
-
+        
         self.close(cam, cam_list, system)
 
     def update_camera_config(self, nodemap):
@@ -78,7 +84,10 @@ class CameraController:
     
     def close(self, cam, cam_list, system):
         if cam is not None:
-            cam.DeInit()
+            try: 
+                cam.DeInit()
+            except:
+                logging.info('Camera is not available to close.')
             del cam
         if cam_list is not None:
             cam_list.Clear()
@@ -248,11 +257,13 @@ class CameraController:
         """Get all config nodes."""
         if nodemap is None:
             logging.info('Camera is not available to get configurations.')
-            return None
+            return {}
         
         config = {}
-        for nodename in nodemap.GetNodeNames():
-            config[nodename] = self.get_config(nodemap, nodename)
+        for name in config_name_set:
+            result = self.get_config(nodemap, name)
+            if result is not None:
+                config[name] = result
         return config
      
     def config_trigger(self, 
