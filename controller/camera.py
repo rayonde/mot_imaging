@@ -81,34 +81,6 @@ class CameraController:
             print('Error: %s' % ex)
             result = False
         
-def reset_trigger(nodemap):
-    """
-    This function returns the camera to a normal state by turning off trigger mode.
-
-    :param nodemap: Transport layer device nodemap.
-    :type nodemap: INodeMap
-    :returns: True if successful, False otherwise.
-    :rtype: bool
-    """
-    try:
-        result = True
-        node_trigger_mode = PySpin.CEnumerationPtr(nodemap.GetNode('TriggerMode'))
-        if not PySpin.IsReadable(node_trigger_mode) or not PySpin.IsWritable(node_trigger_mode):
-            print('Unable to disable trigger mode (node retrieval). Aborting...')
-            return False
-
-        node_trigger_mode_off = node_trigger_mode.GetEntryByName('Off')
-        if not PySpin.IsReadable(node_trigger_mode_off):
-            print('Unable to disable trigger mode (enum entry retrieval). Aborting...')
-            return False
-
-        node_trigger_mode.SetIntValue(node_trigger_mode_off.GetValue())
-
-        print('Trigger mode disabled...')
-
-    except PySpin.SpinnakerException as ex:
-        print('Error: %s' % ex)
-        result = False
     @thread
     def acquisition(self, 
                     num_images:int=10, 
