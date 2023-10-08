@@ -75,11 +75,13 @@ class CameraController:
     def reset_camera(self):
         """Reset camera to a normal state by turning off trigger mode"""
         try:
-            result = True
+            self.cam.EndAcquisition()
             self.set_config('TriggerMode', 'Off')
+            result = True
         except ps.SpinnakerException as ex:
             print('Error: %s' % ex)
             result = False
+        return result
         
     @thread
     def acquisition(self, 
@@ -97,6 +99,10 @@ class CameraController:
         # By default, if no specific color processing algorithm is set, the image
         # processor will default to NEAREST_NEIGHBOR method.
         processor.SetColorProcessing(ps.SPINNAKER_COLOR_PROCESSING_ALGORITHM_HQ_LINEAR)
+        
+        # create folder
+        if not os.path.exists(folder):
+            os.makedirs(folder)
         
         self.cam.BeginAcquisition()
         logging.info('============ Camera acquisition starts ===========')
@@ -118,8 +124,6 @@ class CameraController:
                     # image_data = image_converted.GetData()
 
                     # Save image
-                    if not os.path.exists(folder):
-                        os.makedirs(folder)
 
                     timestr = time.strftime("%Y%m%d")
                     image_filename = os.path.join(folder, timestr + '_' + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
@@ -222,6 +226,8 @@ class CameraController:
 
         self.set_config('TriggerMode', 'On')
         self.set_config('AcquisitionMode', 'Continuous')
+
+        self.device_info()
         return True
     
     def config_fomat(self, pixel_format:str='Mono8'):
