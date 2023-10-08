@@ -14,27 +14,27 @@ camera:
   ExposureAuto: 'Off'
   ExposureCompensation: 0
   ExposureCompensationAuto: 'Off'
-  ExposureMode: Timed
-  ExposureTime: 103.0
-  Gain: 0.0
+  ExposureMode: TriggerWidth
+  ExposureTime: 45.59755325317383
+  Gain: 23.99051856994629
   GainAuto: 'Off'
   PixelFormat: Mono8
   SharpnessAuto: 'Off'
   TriggerActivation: RisingEdge
-  TriggerDelay: 13.0
+  TriggerDelay: 12.159347534179688
   TriggerDelayEnable: false
   TriggerMode: 'On'
-  TriggerSelector: AcquisitionStart
-  TriggerSource: Line3
+  TriggerSelector: ExposureActive
+  TriggerSource: Line0
 camera_info:
   AcquisitionMode: Continuous
-  DeviceModelName: Firefly FFY-U3-16S2M
-  ExposureMode: Timed
-  Height: 1080
+  DeviceModelName: Chameleon3 CM3-U3-13S2M
+  ExposureMode: TriggerWidth
+  Height: 964
   RealPixelSize: 3.75
-  TriggerSelector: AcquisitionStart
-  TriggerSource: Line3
-  Width: 1440
+  TriggerSelector: ExposureActive
+  TriggerSource: Line0
+  Width: 1288
 cooling:
   cooling_current: 200.0
   cooling_detuninglist:
@@ -52,7 +52,7 @@ experiment:
   fileformat: bmp
   filename: f2_ai
   folder: /Raw Data/
-  image_num: 10
+  image_num: 1
   tag: background
   wait_time: 0.0
 fit:

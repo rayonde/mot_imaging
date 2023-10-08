@@ -233,7 +233,7 @@ class CameraController:
 
         self.set_config('TriggerMode', 'On')
         self.set_config('AcquisitionMode', 'Continuous')
-
+        logging.info('================= config FINISH =================')
         return True
     
     def config_format(self, pixel_format:str='Mono8'):
