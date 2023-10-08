@@ -128,8 +128,8 @@ class CameraController:
                     # Save image
 
                     timestr = time.strftime("%Y%m%d")
-                    image_filename =  filepath.joinpath(folder, timestr + '_' + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
-                    
+                    image_path =  filepath.joinpath(folder, timestr + '_' + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
+                    image_filename = str(image_path)
                     image_converted.Save(image_filename)
                     logging.info('Image saved at %s' % image_filename)
                     # Release image
