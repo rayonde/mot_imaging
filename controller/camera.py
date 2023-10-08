@@ -5,6 +5,8 @@ import logging
 from platform import node 
 import os 
 import threading
+from pathlib import Path
+from datetime import date
 
 def thread(func):
     def wrapper(*args, **kwargs):
@@ -101,8 +103,8 @@ class CameraController:
         processor.SetColorProcessing(ps.SPINNAKER_COLOR_PROCESSING_ALGORITHM_HQ_LINEAR)
         
         # create folder
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+        filepath = Path("../Raw Data/").joinpath(str(date.today()))
+        filepath.mkdir(parents=True, exist_ok=True)
         
         self.cam.BeginAcquisition()
         logging.info('============ Camera acquisition starts ===========')
@@ -126,8 +128,7 @@ class CameraController:
                     # Save image
 
                     timestr = time.strftime("%Y%m%d")
-                    image_filename = os.path.join(folder, timestr + '_' + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
-                    
+                    image_filename =  filepath.joinpath(folder, timestr + '_' + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
                     
                     image_converted.Save(image_filename)
                     logging.info('Image saved at %s' % image_filename)
