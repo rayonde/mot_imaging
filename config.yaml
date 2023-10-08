@@ -30,8 +30,11 @@ camera_info:
   DeviceModelName: Chameleon3 CM3-U3-13S2M
   ExposureMode: Timed
   Height: 964
-  RealPixelSize: 3.75
   Width: 1288
+  RealPixelSize: 3.75
+  TriggerSelector: FrameStart
+  TriggerSource: Line0
+  AcquisitionMode: Continuous
 cooling:
   cooling_current: 200.0
   cooling_detuninglist:

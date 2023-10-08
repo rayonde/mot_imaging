@@ -25,6 +25,7 @@ class CameraTab(ttk.Frame):
         self.left_frame = ttk.Frame(self)
         self.left_frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         self.info_frame = self._update_info_view(frame=self.left_frame)
+        self.file_frame = self._update_file_info_view(frame=self.left_frame)
         self._camera_control_button_left(frame=self.left_frame)
        
         # Right column
@@ -45,7 +46,7 @@ class CameraTab(ttk.Frame):
                     result = self.camera_controller.get_config(name)
                     if result:
                         self.camera_info[name] = result
-                
+            
     def _update_setting(self):
         """Update the camera setting from the controller."""
         if self.camera_controller.isavailable:
@@ -69,6 +70,34 @@ class CameraTab(ttk.Frame):
         
         return info_frame
     
+
+    def _update_file_info_view(self, frame):
+        """ Setting the file information frame."""
+        file_frame = ttk.LabelFrame(frame, text="File Information")
+        file_frame.pack(side="top", fill="both", expand=True, padx=5, pady=5)
+
+        # File format
+        fileformat_default = tk.StringVar(value=self.exp_config["fileformat"])
+        tk.Label(self.camera_frame, text="File format:").grid(row=1, column=0, padx=5, pady=5)
+        fileformat_entry = tk.Entry(self.camera_frame, textvariable=fileformat_default)
+        fileformat_entry.grid(row=1, column=1, padx=5, pady=5)
+        fileformat_entry.bind("<Return>", lambda event: self._update_exp_config("fileformat", fileformat_entry.get()))
+        
+        # File name 
+        filename_default = tk.StringVar(value=self.exp_config["filename"])
+        tk.Label(self.camera_frame, text="File name:").grid(row=2, column=0, padx=5, pady=5)
+        filename_entry = tk.Entry(self.camera_frame, textvariable=filename_default)
+        filename_entry.grid(row=2, column=1, padx=5, pady=5)
+        filename_entry.bind("<Return>", lambda event: self._update_exp_config("filename", filename_entry.get()))
+        
+        # Folder name
+        foldername_default = tk.StringVar(value=self.exp_config["folder"])
+        tk.Label(self.camera_frame, text="Folder:").grid(row=2, column=0, padx=5, pady=5)
+        foldername_entry = tk.Entry(self.camera_frame, textvariable=foldername_default)
+        foldername_entry.grid(row=2, column=1, padx=5, pady=5)
+        foldername_entry.bind("<Return>", lambda event: self._update_exp_config("folder", foldername_entry.get()))
+
+
     def _update_camera_setting_view(self, frame):
         # Update the view of the camera parameters
         self.camera_frame = ttk.LabelFrame(frame, text="Camera Settings")
@@ -140,44 +169,24 @@ class CameraTab(ttk.Frame):
         unit_wait_time = self.unit_config["wait_time"] or ""
         tk.Label(self.camera_frame, text=unit_wait_time).grid(row=5, column=2, padx=5, pady=5)
         
-        # File format
-        fileformat_default = tk.StringVar(value=self.exp_config["fileformat"])
-        tk.Label(self.camera_frame, text="File format:").grid(row=6, column=0, padx=5, pady=5)
-        fileformat_entry = tk.Entry(self.camera_frame, textvariable=fileformat_default)
-        fileformat_entry.grid(row=6, column=1, padx=5, pady=5)
-        fileformat_entry.bind("<Return>", lambda event: self._update_exp_config("fileformat", fileformat_entry.get()))
         
-        # File name 
-        filename_default = tk.StringVar(value=self.exp_config["filename"])
-        tk.Label(self.camera_frame, text="File name:").grid(row=7, column=0, padx=5, pady=5)
-        filename_entry = tk.Entry(self.camera_frame, textvariable=filename_default)
-        filename_entry.grid(row=7, column=1, padx=5, pady=5)
-        filename_entry.bind("<Return>", lambda event: self._update_exp_config("filename", filename_entry.get()))
-        
-        # Folder name
-        foldername_default = tk.StringVar(value=self.exp_config["folder"])
-        tk.Label(self.camera_frame, text="Folder:").grid(row=8, column=0, padx=5, pady=5)
-        foldername_entry = tk.Entry(self.camera_frame, textvariable=foldername_default)
-        foldername_entry.grid(row=8, column=1, padx=5, pady=5)
-        foldername_entry.bind("<Return>", lambda event: self._update_exp_config("folder", foldername_entry.get()))
-
         # Gain
         gain_default = self.camera_config["Gain"]
         gain_var = tk.DoubleVar(value=gain_default)
-        tk.Label(self.camera_frame, text="Gain:").grid(row=9, column=0, padx=5, pady=5)
+        tk.Label(self.camera_frame, text="Gain:").grid(row=6, column=0, padx=5, pady=5)
         gain_entry = tk.Entry(self.camera_frame, textvariable=gain_var)
-        gain_entry.grid(row=9, column=1, padx=5, pady=5)
+        gain_entry.grid(row=6, column=1, padx=5, pady=5)
         gain_entry.bind("<Return>", lambda event: self._update_camera_config("Gain", float(gain_entry.get())))
         unit_gain = self.unit_config["Gain"] or "dB"
-        tk.Label(self.camera_frame, text=unit_gain).grid(row=8, column=2, padx=5, pady=5)
+        tk.Label(self.camera_frame, text=unit_gain).grid(row=6, column=2, padx=5, pady=5)
 
 
         # Pixel format
         pixelformat_default = tk.StringVar(value=self.camera_config["PixelFormat"])
-        tk.Label(self.camera_frame, text="Pixel Format:").grid(row=10, column=0, padx=5, pady=5)
+        tk.Label(self.camera_frame, text="Pixel Format:").grid(row=7, column=0, padx=5, pady=5)
         pixelformat_options = ["Mono8"]
         pixelformat_selection = tk.OptionMenu(self.camera_frame, pixelformat_default, *pixelformat_options)
-        pixelformat_selection.grid(row=10, column=1, padx=5, pady=5, sticky="snew")
+        pixelformat_selection.grid(row=7, column=1, padx=5, pady=5, sticky="snew")
         pixelformat_default.trace_add("write", lambda *args, var=pixelformat_default: self._update_camera_config("PixelFormat", var.get()))
 
     
