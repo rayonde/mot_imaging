@@ -192,13 +192,6 @@ class CameraTab(ttk.Frame):
     
     def _camera_control_button_left(self, frame):
 
-        # Config trigger button
-        self.config_trigger_button = ttk.Button(
-            frame, 
-            text="Config Trigger", 
-            command=lambda: self._config_trigger())
-        self.config_trigger_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
-
         # Save config button
         self.save = ttk.Button(frame, text="Save Config", command=lambda: self._save_config())
         self.save.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
@@ -211,6 +204,14 @@ class CameraTab(ttk.Frame):
         self.reset_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
     
     def _camera_control_button_right(self, frame):
+
+        # Config trigger button
+        self.config_trigger_button = ttk.Button(
+            frame, 
+            text="Config Trigger", 
+            command=lambda: self._config_trigger())
+        self.config_trigger_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
+
         # Start the acquisition
         num = self.exp_config["image_num"] 
         wait_time = self.exp_config["wait_time"]
