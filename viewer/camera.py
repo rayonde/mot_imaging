@@ -205,12 +205,6 @@ class CameraTab(ttk.Frame):
     
     def _camera_control_button_right(self, frame):
 
-        # Config trigger button
-        self.config_trigger_button = ttk.Button(
-            frame, 
-            text="Config Trigger", 
-            command=lambda: self._config_trigger())
-        self.config_trigger_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
 
         # Start the acquisition
         num = self.exp_config["image_num"] 
@@ -233,7 +227,14 @@ class CameraTab(ttk.Frame):
                                                                filename,
                                                                folder,
                                                                tag))
-        self.acquisition_button.pack(side="top", fill="x", expand=True, padx=5, pady=5)
+        self.acquisition_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
+
+        # Config trigger button
+        self.config_trigger_button = ttk.Button(
+            frame, 
+            text="Config Trigger", 
+            command=lambda: self._config_trigger())
+        self.config_trigger_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
 
     def _update_exp_config(self, name, value):
         # Update the experimental parameters
