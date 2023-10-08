@@ -195,7 +195,7 @@ class CameraController:
     
     def config_trigger(self, 
                        exposure_time:float=0.0, 
-                       trigger:str='Line0', 
+                       trigger_source:str='Line0', 
                        trigger_delay:float=0.0) -> bool:
         """Configure trigger."""
         logging.info('================= config trigger =================')
@@ -203,7 +203,7 @@ class CameraController:
 
         self.set_config('GainAuto', 'Off')
         self.set_config('GammaEnable', 'False')
-        self.set_config('TriggerSource', trigger)
+        self.set_config('TriggerSource', trigger_source)
         self.set_config('TriggerActivation', 'RisingEdge')
         self.set_config('TriggerDelay', trigger_delay)
         self.set_config('ExposureMode', 'Timed')

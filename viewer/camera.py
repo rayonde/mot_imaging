@@ -68,23 +68,6 @@ class CameraTab(ttk.Frame):
             row_id += 1
         
         return info_frame
-
-    def _update_exp_config(self, name, value):
-        # Update the experimental parameters
-        self.exp_config[name] = value
-        logging.info("Update the experimental parameters: {} = {}".format(name, value))
-    
-    def _update_camera_config(self, name, value):
-        # Update the experimental parameters
-        self.camera_config[name] = value
-        logging.info("Update the camera parameters: {} = {}".format(name, value))
-
-    def _save_config(self):
-        if self.camera_controller.isavailable:
-            config.save()
-            logging.info("Camera available. Save the configuration file.")
-        else:
-            logging.warning("Camera not available. Do not save the configuration file.")
     
     def _update_camera_setting_view(self, frame):
         # Update the view of the camera parameters
@@ -205,7 +188,7 @@ class CameraTab(ttk.Frame):
         # Reset the camera 
         self.reset_button = ttk.Button(
             frame,
-            text="Reset Camera",
+            text="Reset Trigger",
             command=lambda: self.camera_controller.reset_camera())
         self.reset_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
     
@@ -232,7 +215,24 @@ class CameraTab(ttk.Frame):
                                                                folder,
                                                                tag))
         self.acquisition_button.pack(side="top", fill="x", expand=True, padx=5, pady=5)
+
+    def _update_exp_config(self, name, value):
+        # Update the experimental parameters
+        self.exp_config[name] = value
+        logging.info("Update the experimental parameters: {} = {}".format(name, value))
     
+    def _update_camera_config(self, name, value):
+        # Update the experimental parameters
+        self.camera_config[name] = value
+
+        logging.info("Update the camera parameters: {} = {}".format(name, value))
+
+    def _save_config(self):
+        if self.camera_controller.isavailable:
+            config.save()
+            logging.info("Camera available. Save the configuration file.")
+        else:
+            logging.warning("Camera not available. Do not save the configuration file.")
     
     def _config_trigger(self):
         """Combo box for config trigger"""
@@ -241,6 +241,8 @@ class CameraTab(ttk.Frame):
         trigger_source = self.camera_config["TriggerSource"]
         trigger_delay = self.camera_config["TriggerDelay"] 
         
+        print("---------------------------")
+        print(trigger_source)
         self.camera_controller.config_trigger(exposure_time, trigger_source, trigger_delay)
         
         self._update_info()
