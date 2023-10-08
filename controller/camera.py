@@ -81,7 +81,7 @@ class CameraController:
             self.set_config('TriggerMode', 'Off')
             result = True
         except ps.SpinnakerException as ex:
-            print('Error: %s' % ex)
+            logging.warning('Error: %s' % ex)
             result = False
         return result
         
@@ -379,5 +379,13 @@ class CameraController:
 
             
         else: 
-            logging.info('%s node address is not available' % nodename)
+            logging.warning('%s node address is not available' % nodename)
             return None
+    
+
+if __name__ == "__main__":
+    cc = CameraController()
+    print(cc.get_config('TriggerSelector'))
+    cc.get_config('GainAuto')
+    cc.close()
+    
