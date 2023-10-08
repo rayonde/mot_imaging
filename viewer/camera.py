@@ -259,8 +259,6 @@ class CameraTab(ttk.Frame):
         trigger_source = self.camera_config["TriggerSource"]
         trigger_delay = self.camera_config["TriggerDelay"] 
         
-        print("---------------------------")
-        print(trigger_source)
         self.camera_controller.config_trigger(exposure_time, trigger_source, trigger_delay)
         
         self._update_info()
