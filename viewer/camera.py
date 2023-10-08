@@ -203,9 +203,7 @@ class CameraTab(ttk.Frame):
             command=lambda: self.camera_controller.reset_camera())
         self.reset_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
     
-    def _camera_control_button_right(self, frame):
-
-
+    def _acquisition(self):
         # Start the acquisition
         num = self.exp_config["image_num"] 
         wait_time = self.exp_config["wait_time"]
@@ -217,16 +215,20 @@ class CameraTab(ttk.Frame):
         filename = self.exp_config["filename"]
         folder = self.exp_config["folder"]
 
+        self.camera_controller.acquisition(num, 
+                                            wait_time, 
+                                            pixelformat,
+                                            fileformat,
+                                            filename,
+                                            folder,
+                                            tag)
+
+
+    def _camera_control_button_right(self, frame):
         self.acquisition_button = ttk.Button(
             frame,
             text="Start Acquisition",
-            command=lambda: self.camera_controller.acquisition(num, 
-                                                               wait_time, 
-                                                               pixelformat,
-                                                               fileformat,
-                                                               filename,
-                                                               folder,
-                                                               tag))
+            command=lambda: self._acquisition())
         self.acquisition_button.pack(side="bottom", fill="x", expand=True, padx=5, pady=5)
 
         # Config trigger button
