@@ -25,11 +25,11 @@ camera:
   TriggerSelector: FrameStart
   TriggerSource: Line0
   AcquisitionMode: Continuous
+  PixelFormat: Mono8
 camera_info:
   DeviceModelName: Chameleon3 CM3-U3-13S2M
   ExposureMode: Timed
   Height: 964
-  PixelFormat: Mono8
   RealPixelSize: 3.75
   Width: 1288
 cooling:
