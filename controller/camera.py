@@ -254,10 +254,10 @@ class CameraController:
                 node = ps.CEnumerationPtr(node_address)
                 node_entry = node.GetEntryByName(value)
                 if not ps.IsReadable(node_entry):
-                    logging.info('Unable to set %s to %s' % (node.GetName(), value))
+                    logging.warning('Unable to set %s to %s' % (node.GetName(), value))
                     return False
                 
-                node.SetIntValue(node_entry.GetValue())
+                node.SetValue(node_entry.GetValue())
                 logging.info('%s set to %s' % (node.GetName(), value))
                 return True
             
@@ -269,7 +269,7 @@ class CameraController:
                 try: 
                     value = int(value)
                 except ValueError:
-                    logging.info('Value %s is not valid.' % value)
+                    logging.warning('Value %s is not valid.' % value)
                     return False
             
                 if minvalue <= value <= maxvalue:
