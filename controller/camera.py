@@ -207,7 +207,6 @@ class CameraController:
         self.set_config('TriggerMode', 'Off')
 
         self.set_config('GainAuto', 'Off')
-        self.set_config('GammaEnable', 'False')
         self.set_config('SharpnessAuto', 'Off')
         self.set_config('TriggerSource', trigger_source)
         self.set_config('TriggerActivation', 'RisingEdge')
