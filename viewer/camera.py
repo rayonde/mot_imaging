@@ -92,9 +92,9 @@ class CameraTab(ttk.Frame):
         
         # Folder name
         foldername_default = tk.StringVar(value=self.exp_config["folder"])
-        tk.Label(self.file_frame, text="Folder:").grid(row=2, column=0, padx=5, pady=5)
+        tk.Label(self.file_frame, text="Folder:").grid(row=3, column=0, padx=5, pady=5)
         foldername_entry = tk.Entry(self.file_frame, textvariable=foldername_default)
-        foldername_entry.grid(row=2, column=1, padx=5, pady=5)
+        foldername_entry.grid(row=3, column=1, padx=5, pady=5)
         foldername_entry.bind("<Return>", lambda event: self._update_exp_config("folder", foldername_entry.get()))
 
 

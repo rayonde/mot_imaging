@@ -317,7 +317,7 @@ class CameraController:
                 logging.info('Type of node is not supported temporarily.')
                 return False
         else:
-            logging.warn('Node %s is not available' % nodename)
+            logging.warning('Node %s is not available' % nodename)
             return False
         
     def get_config(self, nodename) -> None:
