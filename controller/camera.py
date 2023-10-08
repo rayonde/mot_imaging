@@ -103,7 +103,7 @@ class CameraController:
         processor.SetColorProcessing(ps.SPINNAKER_COLOR_PROCESSING_ALGORITHM_HQ_LINEAR)
         
         # create folder
-        filepath = Path("../Raw Data/").joinpath(str(date.today()))
+        filepath = Path(".." + folder).joinpath(str(date.today()))
         filepath.mkdir(parents=True, exist_ok=True)
         
         self.cam.BeginAcquisition()
