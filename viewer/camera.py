@@ -177,6 +177,17 @@ class CameraTab(ttk.Frame):
         foldername_entry = tk.Entry(self.camera_frame, textvariable=foldername_default)
         foldername_entry.grid(row=8, column=1, padx=5, pady=5)
         foldername_entry.bind("<Return>", lambda event: self._update_exp_config("folder", foldername_entry.get()))
+
+                
+        # Pixel format
+        # print(self.camera_config["PixelFormat"])
+        # pixelformat_default = tk.StringVar(value=self.camera_config["PixelFormat"])
+        # tk.Label(self.camera_frame, text="Pixel Format:").grid(row=9, column=0, padx=5, pady=5)
+        # pixelformat_options = ["Mono8"]
+        # pixelformat_selection = tk.OptionMenu(self.camera_frame, pixelformat_default, *pixelformat_options)
+        # pixelformat_selection.grid(row=9, column=1, padx=5, pady=5, sticky="snew")
+        # pixelformat_default.trace_add("write", lambda *args, var=pixelformat_default: self._update_camera_config("PixelFormat", var.get()))
+
     
     def _camera_control_button_left(self, frame):
 
@@ -201,12 +212,25 @@ class CameraTab(ttk.Frame):
     def _camera_control_button_right(self, frame):
         # Start the acquisition
         num = self.exp_config["image_num"] 
-        wait_time = self.exp_config["wait_time"] 
+        wait_time = self.exp_config["wait_time"]
+        tag = self.exp_config["tag"]
+        # self.exp_config["PixelFormat"] 
+        # pixelformat = self.exp_config["PixelFormat"] 
+        pixelformat = "Mono8"
+        fileformat = self.exp_config["fileformat"]
+        filename = self.exp_config["filename"]
+        folder = self.exp_config["folder"]
 
         self.acquisition_button = ttk.Button(
             frame,
             text="Start Acquisition",
-            command=lambda: self.camera_controller.acquisition(num, wait_time))
+            command=lambda: self.camera_controller.acquisition(num, 
+                                                               wait_time, 
+                                                               pixelformat,
+                                                               fileformat,
+                                                               filename,
+                                                               folder,
+                                                               tag))
         self.acquisition_button.pack(side="top", fill="x", expand=True, padx=5, pady=5)
     
     

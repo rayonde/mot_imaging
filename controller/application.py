@@ -50,7 +50,8 @@ class MainController:
     def quit(self, *args, **kwargs):
         """Run callback, then shut down Tkinter master."""
         self.shutdown_cleanup()
-        self.camera_controller.close()
+        # try to close camera with a timeout of 5 seconds
+        self.camera_controller.close(timeout=5)
         self.view.master.destroy()
         self.view.master.quit()
 

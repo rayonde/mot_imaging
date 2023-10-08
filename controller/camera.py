@@ -89,7 +89,7 @@ class CameraController:
                     fileformat:str='bmp', 
                     filename:str='test', 
                     folder:str='data', 
-                    tag:str="'1"):
+                    tag:str="1"):
         """Acquire image."""
         
         # Create ImageProcessor instance for post processing images
@@ -137,20 +137,37 @@ class CameraController:
                 logging.info('Error: %s' % ex)
        
         self.cam.EndAcquisition()
-        logging.info('Camera acquisition ends.')
-        print(self.cam)
+        logging.info('============= Camera acquisition ends ============')
     
-    def close(self):
+    def close(self, timeout:float=0.0) -> bool:
+        
+        logging.info('================== close camera ==================')
+        
+        
+                        
         if self.cam: 
+            while True:
+                try:
+                    
+                    self.cam.DeInit()
+                    break
+
+
+
             try:
                 self.cam.DeInit()
             except ps.SpinnakerException as ex:
                 logging.info('Error: %s' % ex)
+                # when the camera is streaming, it cannot be deinitiated
+                # in this case, the camera list and interface list and system
+                # should not be released. 
+                return False
         del self.cam
         self.cam_list.Clear()
         self.iface_list.Clear()
         self.system.ReleaseInstance()
         logging.info('Camera controller closed.')
+        return True
 
     def device_info(self):
         """Print device info."""
