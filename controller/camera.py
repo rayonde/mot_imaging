@@ -141,34 +141,42 @@ class CameraController:
     
     def close(self, timeout:float=0.0) -> bool:
         
-        logging.info('================== close camera ==================')
-        
-        
-                        
+        result = False
+        start_time = time.time()
+
         if self.cam: 
             while True:
                 try:
-                    
                     self.cam.DeInit()
+                    result = True
                     break
-
-
-
-            try:
-                self.cam.DeInit()
-            except ps.SpinnakerException as ex:
-                logging.info('Error: %s' % ex)
+                except ps.SpinnakerException as ex:
+                    logging.info('Error: %s' % ex)
+                    if time.time() - start_time > timeout:
+                        logging.info('Camera deinitiation timeout.')
+                        break
+                    else:
+                        continue        
                 # when the camera is streaming, it cannot be deinitiated
                 # in this case, the camera list and interface list and system
                 # should not be released. 
+            if result:              
+                del self.cam
+                self.cam_list.Clear()
+                self.iface_list.Clear()
+                self.system.ReleaseInstance()
+                logging.info('Camera controller closed.')
+                return True
+            else:
                 return False
-        del self.cam
-        self.cam_list.Clear()
-        self.iface_list.Clear()
-        self.system.ReleaseInstance()
-        logging.info('Camera controller closed.')
-        return True
+        else:
+            self.cam_list.Clear()
+            self.iface_list.Clear()
+            self.system.ReleaseInstance()
+            logging.info('Camera is not found, camera controller closed.')
+            return True 
 
+        
     def device_info(self):
         """Print device info."""
         logging.info('=============== device info update ===============')
