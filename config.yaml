@@ -12,28 +12,25 @@ beam:
 camera:
   ExposureAuto: 'Off'
   ExposureCompensation: 0
-  ExposureCompensationAuto: false
+  ExposureCompensationAuto: 'Off'
   ExposureMode: Timed
-  ExposureTime: 45.59755325317383
-  Gain: 23.99051856994629
+  ExposureTime: 46
+  Gain: 0.0
   GainAuto: 'Off'
-  SharpnessAuto: Continuous
+  SharpnessAuto: 'Off'
   TriggerActivation: RisingEdge
-  TriggerDelay: 12.159347534179688
+  TriggerDelay: 13
   TriggerDelayEnable: false
   TriggerMode: 'On'
   TriggerSelector: FrameStart
   TriggerSource: Line0
-camera_info:
   AcquisitionMode: Continuous
+camera_info:
   DeviceModelName: Chameleon3 CM3-U3-13S2M
   ExposureMode: Timed
   Height: 964
   PixelFormat: Mono8
   RealPixelSize: 3.75
-  TriggerMode: 'On'
-  TriggerSelector: FrameStart
-  TriggerSource: Line0
   Width: 1288
 cooling:
   cooling_current: 200.0
