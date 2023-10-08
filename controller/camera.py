@@ -180,7 +180,7 @@ class CameraController:
             self.system.ReleaseInstance()
             logging.info('Camera is not found, camera controller closed.')
             return True 
-
+    
         
     def device_info(self):
         """Print device info."""
@@ -234,9 +234,10 @@ class CameraController:
         self.set_config('TriggerMode', 'On')
         self.set_config('AcquisitionMode', 'Continuous')
 
-        self.device_info()
         return True
     
+    def update_camera_config(self):
+
     def config_fomat(self, pixel_format:str='Mono8'):
         """Configure image format."""
         self.set_config('PixelFormat', pixel_format)
