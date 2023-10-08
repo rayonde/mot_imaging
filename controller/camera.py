@@ -257,7 +257,7 @@ class CameraController:
                     logging.warning('Unable to set %s to %s' % (node.GetName(), value))
                     return False
                 
-                node.SetValue(node_entry.GetValue())
+                node.SetIntValue(node_entry.GetValue())
                 logging.info('%s set to %s' % (node.GetName(), value))
                 return True
             
