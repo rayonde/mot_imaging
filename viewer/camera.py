@@ -161,15 +161,24 @@ class CameraTab(ttk.Frame):
         foldername_entry.grid(row=8, column=1, padx=5, pady=5)
         foldername_entry.bind("<Return>", lambda event: self._update_exp_config("folder", foldername_entry.get()))
 
-                
+        # Gain
+        gain_default = self.camera_config["Gain"]
+        gain_var = tk.DoubleVar(value=gain_default)
+        tk.Label(self.camera_frame, text="Gain:").grid(row=9, column=0, padx=5, pady=5)
+        gain_entry = tk.Entry(self.camera_frame, textvariable=gain_var)
+        gain_entry.grid(row=9, column=1, padx=5, pady=5)
+        gain_entry.bind("<Return>", lambda event: self._update_camera_config("Gain", float(gain_entry.get())))
+        unit_gain = self.unit_config["Gain"] or "dB"
+        tk.Label(self.camera_frame, text=unit_gain).grid(row=8, column=2, padx=5, pady=5)
+
+
         # Pixel format
-        # print(self.camera_config["PixelFormat"])
-        # pixelformat_default = tk.StringVar(value=self.camera_config["PixelFormat"])
-        # tk.Label(self.camera_frame, text="Pixel Format:").grid(row=9, column=0, padx=5, pady=5)
-        # pixelformat_options = ["Mono8"]
-        # pixelformat_selection = tk.OptionMenu(self.camera_frame, pixelformat_default, *pixelformat_options)
-        # pixelformat_selection.grid(row=9, column=1, padx=5, pady=5, sticky="snew")
-        # pixelformat_default.trace_add("write", lambda *args, var=pixelformat_default: self._update_camera_config("PixelFormat", var.get()))
+        pixelformat_default = tk.StringVar(value=self.camera_config["PixelFormat"])
+        tk.Label(self.camera_frame, text="Pixel Format:").grid(row=10, column=0, padx=5, pady=5)
+        pixelformat_options = ["Mono8"]
+        pixelformat_selection = tk.OptionMenu(self.camera_frame, pixelformat_default, *pixelformat_options)
+        pixelformat_selection.grid(row=10, column=1, padx=5, pady=5, sticky="snew")
+        pixelformat_default.trace_add("write", lambda *args, var=pixelformat_default: self._update_camera_config("PixelFormat", var.get()))
 
     
     def _camera_control_button_left(self, frame):
