@@ -236,9 +236,7 @@ class CameraController:
 
         return True
     
-    def update_camera_config(self):
-
-    def config_fomat(self, pixel_format:str='Mono8'):
+    def config_format(self, pixel_format:str='Mono8'):
         """Configure image format."""
         self.set_config('PixelFormat', pixel_format)
       
