@@ -19,12 +19,12 @@ camera:
   Gain: 0.0
   GainAuto: 'Off'
   PixelFormat: Mono8
-  SharpnessAuto: Continuous
+  SharpnessAuto: 'Off'
   TriggerActivation: RisingEdge
   TriggerDelay: 13.0
   TriggerDelayEnable: false
   TriggerMode: 'On'
-  TriggerSelector: FrameStart
+  TriggerSelector: AcquisitionStart
   TriggerSource: Line2
 camera_info:
   AcquisitionMode: Continuous
@@ -32,9 +32,16 @@ camera_info:
   ExposureMode: Timed
   Height: 964
   RealPixelSize: 3.75
-  TriggerSelector: FrameStart
+  TriggerSelector: AcquisitionStart
   TriggerSource: Line2
   Width: 1288
+experiment:
+  fileformat: bmp
+  filename: f2_ai
+  folder: /Raw Data/
+  image_num: 10
+  tag: background
+  wait_time: 0.0
 cooling:
   cooling_current: 200.0
   cooling_detuninglist:
@@ -48,27 +55,6 @@ cooling:
   - 100.0
   - 100.0
   - 100.0
-experiment:
-  ExposureAuto: Continuous
-  ExposureCompensation: null
-  ExposureCompensationAuto: null
-  ExposureMode: Timed
-  ExposureTime: 999.0
-  Gain: 0.0
-  GainAuto: Continuous
-  SharpnessAuto: null
-  TriggerActivation: null
-  TriggerDelay: 208.0
-  TriggerDelayEnable: null
-  TriggerMode: 'Off'
-  TriggerSelector: FrameStart
-  TriggerSource: Software
-  fileformat: bmp
-  filename: f2_ai
-  folder: /data/
-  image_num: 10
-  tag: background
-  wait_time: 0.0
 fit:
   center:
   - 300.0
