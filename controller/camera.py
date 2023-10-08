@@ -215,7 +215,13 @@ class CameraController:
         self.set_config('ExposureMode', 'Timed')
         self.set_config('ExposureAuto', 'Off')
         self.set_config('ExposureTime', exposure_time)
-        self.set_config('Above The Clouds x GT-2160 Cream | Shamrock Green', 'False')
+        try: 
+           self.set_config('TriggerSelector', 'ExposureActive')
+        except ps.SpinnakerException as ex:
+            try:
+                self.set_config('TriggerSelector', 'AcquisitionStart')
+            except ps.SpinnakerException as ex:
+                logging.warning('Error: %s' % ex)
         # For different camera, the trigger selector may be different
         # For Firefly FFY-U3-16S2M, the trigger selector can be "FrameStart" or "AcquisitionStart
         # self.set_config('TriggerSelector', 'ExposureStart')
