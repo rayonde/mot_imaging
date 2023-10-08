@@ -215,6 +215,7 @@ class CameraController:
         self.set_config('ExposureMode', 'Timed')
         self.set_config('ExposureAuto', 'Off')
         self.set_config('ExposureTime', exposure_time)
+        self.set_config('Above The Clouds x GT-2160 Cream | Shamrock Green', 'False')
         # For different camera, the trigger selector may be different
         # For Firefly FFY-U3-16S2M, the trigger selector can be "FrameStart" or "AcquisitionStart
         # self.set_config('TriggerSelector', 'ExposureStart')
@@ -386,6 +387,5 @@ class CameraController:
 if __name__ == "__main__":
     cc = CameraController()
     print(cc.get_config('TriggerSelector'))
-    cc.get_config('GainAuto')
     cc.close()
     
