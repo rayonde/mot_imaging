@@ -73,27 +73,27 @@ class CameraTab(ttk.Frame):
 
     def _update_file_info_view(self, frame):
         """ Setting the file information frame."""
-        file_frame = ttk.LabelFrame(frame, text="File Information")
-        file_frame.pack(side="top", fill="both", expand=True, padx=5, pady=5)
+        self.file_frame = ttk.LabelFrame(frame, text="File Information")
+        self.file_frame.pack(side="top", fill="both", expand=True, padx=5, pady=5)
 
         # File format
         fileformat_default = tk.StringVar(value=self.exp_config["fileformat"])
-        tk.Label(self.camera_frame, text="File format:").grid(row=1, column=0, padx=5, pady=5)
-        fileformat_entry = tk.Entry(self.camera_frame, textvariable=fileformat_default)
+        tk.Label(self.file_frame, text="File format:").grid(row=1, column=0, padx=5, pady=5)
+        fileformat_entry = tk.Entry(self.file_frame, textvariable=fileformat_default)
         fileformat_entry.grid(row=1, column=1, padx=5, pady=5)
         fileformat_entry.bind("<Return>", lambda event: self._update_exp_config("fileformat", fileformat_entry.get()))
         
         # File name 
         filename_default = tk.StringVar(value=self.exp_config["filename"])
-        tk.Label(self.camera_frame, text="File name:").grid(row=2, column=0, padx=5, pady=5)
-        filename_entry = tk.Entry(self.camera_frame, textvariable=filename_default)
+        tk.Label(self.file_frame, text="File name:").grid(row=2, column=0, padx=5, pady=5)
+        filename_entry = tk.Entry(self.file_frame, textvariable=filename_default)
         filename_entry.grid(row=2, column=1, padx=5, pady=5)
         filename_entry.bind("<Return>", lambda event: self._update_exp_config("filename", filename_entry.get()))
         
         # Folder name
         foldername_default = tk.StringVar(value=self.exp_config["folder"])
-        tk.Label(self.camera_frame, text="Folder:").grid(row=2, column=0, padx=5, pady=5)
-        foldername_entry = tk.Entry(self.camera_frame, textvariable=foldername_default)
+        tk.Label(self.file_frame, text="Folder:").grid(row=2, column=0, padx=5, pady=5)
+        foldername_entry = tk.Entry(self.file_frame, textvariable=foldername_default)
         foldername_entry.grid(row=2, column=1, padx=5, pady=5)
         foldername_entry.bind("<Return>", lambda event: self._update_exp_config("folder", foldername_entry.get()))
 
