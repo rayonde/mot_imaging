@@ -251,6 +251,11 @@ class CameraTab(ttk.Frame):
 
     def _save_config(self):
         if self.camera_controller.isavailable:
+
+            config["camera_info"] = self.camera_info
+            config["camera"] = self.camera_config 
+            config["unit"] = self.unit_config 
+            config["experiment"] = self.exp_config 
             config.save()
             logging.info("Camera available. Save the configuration file.")
         else:

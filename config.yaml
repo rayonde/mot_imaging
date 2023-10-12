@@ -50,7 +50,7 @@ cooling:
   - 100.0
 experiment:
   fileformat: bmp
-  filename: f2_ai
+  filename: absorption_imaging_test
   folder: data/
   image_num: 1
   tag: background
@@ -136,4 +136,4 @@ unit:
   tof: us
   wait_time: s
   wavelength: nm
-watch_directory: /home/swm/programs/mot_imaging/mot_imaging
+watch_directory: /home/swm/programs/mot_imaging/data/2023-10-12
