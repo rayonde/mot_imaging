@@ -86,7 +86,7 @@ class SequenceController:
 
     def _output_log_path(self):
         """Returns the path to the output log file."""
-        output = Path("../Raw Data/").joinpath(str(date.today()))
+        output = Path("data/").joinpath(str(date.today()))
         output.mkdir(parents=True, exist_ok=True)
         return output.joinpath("000_logging.hdf5")
 

@@ -103,7 +103,7 @@ class CameraController:
         processor.SetColorProcessing(ps.SPINNAKER_COLOR_PROCESSING_ALGORITHM_HQ_LINEAR)
         
         # create folder
-        filepath = Path(".." + folder).joinpath(str(date.today()))
+        filepath = Path(folder).joinpath(str(date.today()))
         filepath.mkdir(parents=True, exist_ok=True)
         
         self.cam.BeginAcquisition()
@@ -201,20 +201,25 @@ class CameraController:
     def config_trigger(self, 
                        exposure_time:float=0.0, 
                        trigger_source:str='Line0', 
-                       trigger_delay:float=0.0) -> bool:
+                       trigger_delay:float=0.0,
+                       gain:float=0.0) -> bool:
         """Configure trigger."""
         logging.info('================= config trigger =================')
         self.set_config('TriggerMode', 'Off')
 
         self.set_config('GainAuto', 'Off')
+        self.set_config('Gain', gain)
         self.set_config('TriggerSource', trigger_source)
         self.set_config('TriggerActivation', 'RisingEdge')
         self.set_config('TriggerDelay', trigger_delay)
         self.set_config('ExposureMode', 'Timed')
-        self.set_config('ExposureAuto', 'Off')
         self.set_config('ExposureTime', exposure_time)
+        
+
+        # it seems the exposureactive and timed cannot exist at the same time
+        # now config with "timed" and "framestart" 
         try: 
-           self.set_config('TriggerSelector', 'ExposureActive')
+           self.set_config('TriggerSelector', 'FrameStart')
         except ps.SpinnakerException as ex:
             try:
                 self.set_config('TriggerSelector', 'AcquisitionStart')
@@ -230,9 +235,9 @@ class CameraController:
         # Not sure if it is a problem because there is no physical trigger connected to the camera when
         # the error message appears.
         # The Acquisiton of images has a timeout of 1000 ms, which is set in the acquisition function.
-
         self.set_config('TriggerMode', 'On')
         self.set_config('AcquisitionMode', 'Continuous')
+        
         logging.info('================= config finish =================')
         return True
     
