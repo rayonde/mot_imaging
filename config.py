@@ -56,7 +56,7 @@ class Configuration(dict):
     def pixel_size(self):
         var = self["camera_info"]["RealPixelSize"]
         if var:
-            return float(var) * 1e-3
+            return float(var) * 1e-6
         else:
             return None
     
@@ -133,6 +133,14 @@ class Configuration(dict):
             return None
     
     @property
+    def mot_length(self):
+        var = self["mot"]["length"]
+        if var:
+            return float(var) * 1e-3
+        else:
+            return None
+    
+    @property
     def physical_scale(self):
         return self.pixel_size * (1/self.magnification)
     
@@ -152,7 +160,7 @@ class Configuration(dict):
 
     @fit_optical_density.setter
     def fit_optical_density(self, val):
-        self["fit"]["fit_optical_density"] = str(val)
+        self["fit"]["fit_optical_density"] = val
 
     @property
     def fix_theta(self):
@@ -165,7 +173,7 @@ class Configuration(dict):
 
     @fix_theta.setter
     def fix_theta(self, val):
-        self["fit"]["fix_theta"] = str(val)
+        self["fit"]["fix_theta"] = val
 
     @property
     def fix_z0(self):
@@ -178,7 +186,7 @@ class Configuration(dict):
 
     @fix_z0.setter
     def fix_z0(self, val):
-        self["fit"]["fix_z0"] = str(val)
+        self["fit"]["fix_z0"] = val
 
     @property
     def roi(self):

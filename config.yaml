@@ -1,14 +1,13 @@
 atoms:
   atom: Rb87
-  coil_current: 0.0
-  dispenser_current: 0.0
   mass: 1.443160648e-25
+mot:
+  length: 5.0
 beam:
-  crosssection: 3.0
   detuning: 0.0
   linewidth: 6.6
   magnification: 1.0
-  wavelength: 680.24602
+  wavelength: 780.24602
 camera:
   AcquisitionMode: Continuous
   ExposureAuto: 'Off'
@@ -61,10 +60,10 @@ fit:
   - 390.0
   fit: true
   fit_2D: true
-  fit_optical_density: 'False'
+  fit_optical_density: true
   fix_center: false
   fix_theta: false
-  fix_z0: 'False'
+  fix_z0: false
   roi:
   - 0
   - 150

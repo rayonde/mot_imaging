@@ -145,9 +145,16 @@ class Shot:
         self.fit_1D = None
         
     @property
-    def atom_density(self):
-        pass
-    
+    def max_atom_density(self):
+        sigma_0 = (3 / (2 * np.pi)) * np.square(config.wavelength)  # cross-section
+        
+        sigma = sigma_0 * np.reciprocal(
+            1 + np.square(config.detuning / (config.linewidth / 2))
+        )  # off resonance
+        max_od = np.max(self.optical_density)
+        max_atom_density = (max_od / sigma) / config.mot_length
+        return max_atom_density
+        
     ########################################################
     # Linear poliarized light saturation intensity for D2 line of Rb87
     # I_sat = 2.503e-3 # W/cm^2
@@ -167,8 +174,8 @@ class Shot:
         sigma = sigma_0 * np.reciprocal(
             1 + np.square(config.detuning / (config.linewidth / 2))
         )  # off resonance
-        area = np.square(config.physical_scale * 1e-3)  # pixel area in SI units
-
+        area = np.square(config.physical_scale)  # pixel area in SI units
+        
         density = self.optical_density
         scale = 1
         if self.fit:
@@ -179,6 +186,8 @@ class Shot:
                 density = density[self.fit.sigma_mask]
                 scale = 0.866
 
+        print(np.max(density))
+        print(self.max_atom_density)
         return (area / sigma) * np.sum(density) / scale  # Divide by 1.5-sigma area
     
     @property
@@ -190,7 +199,7 @@ class Shot:
             1 + np.square(config.detuning / (config.linewidth / 2))
         )  # off resonance
 
-        saturated_od = np.log(1 + (n * sigma) / (config.physical_scale * 1e-3) ** 2)
+        saturated_od = np.log(1 + (n * sigma) / (config.physical_scale) ** 2)
 
     @property
     def three_roi_atom_number(self):
@@ -570,8 +579,8 @@ class ShotFit1DSummed(ShotFit):
 
     @ShotFit.save_result
     def fit(self):
-        logging.info("Running 1D summed fit...")
-
+        
+        print(self.fit_data)
         x_mg, y_mg = np.arange(self.shot.width), np.arange(self.shot.height)
         x_data, y_data = (
             np.sum(self.fit_data, axis=0),
@@ -581,6 +590,9 @@ class ShotFit1DSummed(ShotFit):
 
         x_result = model.fit(x_data, x=x_mg, center=self.shot.width / 2)
         y_result = model.fit(y_data, x=y_mg, center=self.shot.height / 2)
+        logging.info("Running 1D summed fit...")
+        print(x_result.fit_report())
+        print(y_result.fit_report())
 
         return x_result, y_result
 
