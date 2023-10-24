@@ -121,14 +121,14 @@ class CameraController:
                     logging.info('Grabbed Image %d, width = %d, height = %d' % (i, width, height))
 
                     # Get image data
-                    if pixelformat == "Mono8":
-                        image_converted = processor.Convert(image_result, ps.PixelFormat_Mono8)
+                    # if pixelformat == "Mono8":
+                    # image_converted = processor.Convert(image_result, ps.PixelFormat_Mono8)
                     # image_data = image_converted.GetData()
-
-                    # Save image
+                    image_converted = image_result
+        
 
                     timestr = time.strftime("%Y%m%d")
-                    image_path =  filepath.joinpath(folder, timestr + '_' + filename + '_' + str(i) + '_' + tag + '.{}'.format(fileformat))
+                    image_path =  filepath.joinpath( timestr + '_' + filename + '_' + str(i) + '_' + str(tag) + '.{}'.format(fileformat))
                     image_filename = str(image_path)
                     image_converted.Save(image_filename)
                     logging.info('Image saved at %s' % image_filename)

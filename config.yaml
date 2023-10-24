@@ -15,7 +15,7 @@ camera:
   ExposureCompensation: 0
   ExposureCompensationAuto: 'Off'
   ExposureMode: Timed
-  ExposureTime: 215.05355834960938
+  ExposureTime: 113.36803436279297
   Gain: 0.0
   GainAuto: 'Off'
   PixelFormat: Mono8
@@ -25,7 +25,7 @@ camera:
   TriggerDelayEnable: false
   TriggerMode: 'On'
   TriggerSelector: FrameStart
-  TriggerSource: Line2
+  TriggerSource: Line3
 camera_info:
   AcquisitionMode: Continuous
   DeviceModelName: Chameleon3 CM3-U3-13S2M
@@ -33,7 +33,7 @@ camera_info:
   Height: 964
   RealPixelSize: 3.75
   TriggerSelector: FrameStart
-  TriggerSource: Line2
+  TriggerSource: Line3
   Width: 1288
 cooling:
   cooling_current: 200.0
@@ -52,23 +52,23 @@ experiment:
   fileformat: bmp
   filename: absorption_imaging_test
   folder: data/
-  image_num: 1
-  tag: background
-  wait_time: 0.0
+  image_num: 5
+  tag: '1'
+  wait_time: 2.0
 fit:
   center:
-  - 300.0
-  - 400.0
+  - 650.0
+  - 390.0
   fit: true
   fit_2D: true
-  fit_optical_density: false
+  fit_optical_density: 'False'
   fix_center: false
   fix_theta: false
-  fix_z0: false
+  fix_z0: 'False'
   roi:
-  - 400
-  - 300
-  - 1100
+  - 0
+  - 150
+  - 1200
   - 800
   roi_enabled: false
   three_roi_enabled: false
@@ -136,4 +136,4 @@ unit:
   tof: us
   wait_time: s
   wavelength: nm
-watch_directory: /home/swm/programs/mot_imaging/data/2023-10-12
+watch_directory: /home/swm/programs/mot_imaging
